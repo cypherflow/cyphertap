@@ -8,5 +8,5 @@
 </script>
 
 <button onclick={increment}>
-  Cyphertap: count {count}
+  Cyphertap: updated 0.0.5 {count}
 </button>

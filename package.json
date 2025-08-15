@@ -1,8 +1,28 @@
 {
   "name": "cyphertap",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.0.5",
+  "private": false,
+  "description": "Bitcoin Lightning, Ecash and Nostr wallet in a portable Web Component.",
+  "keywords": [
+    "nostr",
+    "ecash",
+    "ndk",
+    "cashu",
+    "lightning",
+    "btc"
+  ],
+  "homepage": "https://github.com/cypherflow/cyphertap#readme",
+  "bugs": {
+    "url": "https://github.com/cypherflow/cyphertap/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cypherflow/cyphertap.git"
+  },
+  "license": "MIT",
+  "author": "cypherflow",
   "type": "module",
+  "main": "dist/index.es.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
