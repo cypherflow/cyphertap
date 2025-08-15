@@ -33,6 +33,9 @@ importers:
       vite:
         specifier: ^7.1.2
         version: 7.1.2(@types/node@24.3.0)
+      vite-plugin-css-injected-by-js:
+        specifier: ^3.5.2
+        version: 3.5.2(vite@7.1.2(@types/node@24.3.0))
       vite-plugin-watch-and-run:
         specifier: ^1.7.5
         version: 1.7.5
@@ -572,6 +575,11 @@ packages:
   undici-types@7.10.0:
     resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
 
+  vite-plugin-css-injected-by-js@3.5.2:
+    resolution: {integrity: sha512-2MpU/Y+SCZyWUB6ua3HbJCrgnF0KACAsmzOQt1UvRVJCGF6S8xdA3ZUhWcWdM9ivG4I5az8PnQmwwrkC2CAQrQ==}
+    peerDependencies:
+      vite: '>2.0.0-0'
+
   vite-plugin-watch-and-run@1.7.5:
     resolution: {integrity: sha512-IISx6Cw+w/9HhxaovnJlXaEAnPlA5wLY8lk0CMrFkBgdJdhKElH0jGSjf6gCPti/Z9F4kMM8WUMGx8CQm1BpHQ==}
     engines: {node: ^16.14 || >=18}
@@ -1081,6 +1089,10 @@ snapshots:
   typescript@5.8.3: {}
 
   undici-types@7.10.0: {}
+
+  vite-plugin-css-injected-by-js@3.5.2(vite@7.1.2(@types/node@24.3.0)):
+    dependencies:
+      vite: 7.1.2(@types/node@24.3.0)
 
   vite-plugin-watch-and-run@1.7.5:
     dependencies:

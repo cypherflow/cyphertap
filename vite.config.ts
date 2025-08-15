@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+
 import { watchAndRun } from 'vite-plugin-watch-and-run';
 import { resolve } from 'path'
 
@@ -12,10 +14,14 @@ export default defineConfig({
       entry: "src/index.ts",
       formats: ['es', 'umd'],
       fileName: (format, entryName) => `${entryName}.${format}.js`
-    }
+    },
+    cssCodeSplit: true,
   },
   plugins: [
-    svelte(),
+    cssInjectedByJsPlugin(),
+    svelte({
+      emitCss: false,
+    }),
 
     watchAndRun([
       {

@@ -1,9 +1,5 @@
 <svelte:options customElement="cyphertap-button" />
 
-<!-- <svelte:head> -->
-<!-- <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css" /> -->
-<!-- </svelte:head> -->
-
 <script lang="ts">
   import "@awesome.me/webawesome/dist/styles/webawesome.css";
   import "@awesome.me/webawesome/dist/components/button/button.js";
