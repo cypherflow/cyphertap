@@ -1,6 +1,6 @@
 {
   "name": "cyphertap",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": false,
   "description": "Bitcoin Lightning, Ecash and Nostr wallet in a portable Web Component.",
   "keywords": [
