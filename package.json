@@ -1,5 +1,6 @@
 {
   "name": "cyphertap",
+  "description": "Nostr, Lightning and Ecash on a single Button component",
   "version": "0.0.10",
   "scripts": {
     "dev": "vite dev",
@@ -34,6 +35,16 @@
       "svelte": "./dist/index.js"
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cypherflow/cyphertap.git"
+  },
+  "author": "cypherflow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cypherflow/cyphertap/issues"
+  },
+  "homepage": "https://github.com/cypherflow/cyphertap#readme",
   "peerDependencies": {
     "svelte": "^5.0.0"
   },
@@ -82,7 +93,10 @@
     "vitest-browser-svelte": "^0.1.0"
   },
   "keywords": [
-    "svelte"
+    "svelte",
+    "nostr",
+    "ecash",
+    "lightning"
   ],
   "dependencies": {
     "@inlang/paraglide-js": "^2.0.0"
