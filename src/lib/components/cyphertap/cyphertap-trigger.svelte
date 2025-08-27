@@ -2,8 +2,8 @@
 	import { LogIn, Wallet } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
-	import { isWalletReady, walletBalance } from '@/stores/wallet.js';
-	import { isLoggedIn, isConnecting } from '@/stores/nostr.js';
+	import { isWalletReady, walletBalance } from '$lib/stores/wallet.js';
+	import { isLoggedIn, isConnecting } from '$lib/stores/nostr.js';
 
 	// Format balance for display
 	function formatBalance(balance: number): string {

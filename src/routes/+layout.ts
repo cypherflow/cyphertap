@@ -1,4 +1,4 @@
-import { initDebug } from "@/utils/debug.js";
+import { initDebug } from "$lib/utils/debug.js";
 
 // Disable SSR
 export const ssr = false;

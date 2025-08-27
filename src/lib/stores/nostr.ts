@@ -13,7 +13,7 @@ import { writable, derived, get } from 'svelte/store';
 import { BROWSER as browser } from 'esm-env'
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import { publishUnpublishedEvents, startUnpublishedEventsMonitor, stopUnpublishedEventsMonitor } from '$lib/services/unpublishedEvents.js';
-import { createDebug } from '@/utils/debug.js';
+import { createDebug } from '$lib/utils/debug.js';
 
 // Create debug logger for Nostr functionality
 const d = createDebug('nostr');

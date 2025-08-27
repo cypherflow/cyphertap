@@ -5,9 +5,9 @@
 	import { navigateTo } from '$lib/stores/navigation.js';
 	import { onMount } from 'svelte';
 	import ViewContainer from './view-container.svelte';
-	import Button from '@/components/ui/button/button.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import { LogIn, UserPlus, Key, MonitorSmartphone } from '@lucide/svelte';
-	import Separator from '@/components/ui/separator/separator.svelte';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
 
 	let hasNostrExtension = $state<boolean>(false);
 
