@@ -1,8 +1,6 @@
 <script lang="ts">
-	import CyphertapTrigger from '$lib/components/cyphertap/cyphertap-trigger.svelte';
+	import Cyphertap from '@/components/cyphertap/cyphertap.svelte';
 </script>
 
-<h1>Welcome to your library project</h1>
-<p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-<CyphertapTrigger />
+<h1>Cyphertap - Nostr, Ecash and Lightning in a single button component</h1>
+<Cyphertap />
