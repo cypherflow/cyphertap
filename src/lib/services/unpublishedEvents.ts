@@ -1,6 +1,6 @@
 // src/lib/client/services/unpublishedEvents.ts
 import { get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { BROWSER as browser } from 'esm-env';
 import { getNDK, relayConnectionStatus } from '$lib/stores/nostr.js';
 import { createDebug } from '$lib/utils/debug.js';
 

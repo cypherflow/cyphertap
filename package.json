@@ -1,7 +1,7 @@
 {
   "name": "cyphertap",
   "description": "Nostr, Lightning and Ecash on a single Button component",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && npm run prepack",
@@ -110,6 +110,7 @@
     "@nostr-dev-kit/ndk-svelte": "^2.4.38",
     "@nostr-dev-kit/ndk-wallet": "^0.6.2",
     "debug": "^4.4.1",
+    "esm-env": "^1.2.2",
     "mode-watcher": "^1.1.0",
     "nanoid": "^5.1.5"
   },

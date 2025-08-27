@@ -1,6 +1,6 @@
 
 import debug from 'debug';
-import { browser } from '$app/environment';
+import { BROWSER as browser } from 'esm-env';
 
 // Root namespace for your app
 const APP_NAMESPACE = 'ct';

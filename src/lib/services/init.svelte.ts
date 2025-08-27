@@ -1,8 +1,7 @@
 
 // src/lib/client/services/initialization.ts
 import { get } from 'svelte/store';
-import { browser } from '$app/environment';
-import { goto } from '$app/navigation';
+import { BROWSER as browser } from 'esm-env';
 import {
   ndkInstance,
   currentUser,
@@ -135,16 +134,16 @@ export function isAppReady(): boolean {
   return !!get(currentUser) && appState.isInitialized;
 }
 
-/**
- * Validation function for route guards
- * Redirects to login if not authenticated
- */
-export function requireAuth(): boolean {
-  if (browser && !isAppReady()) {
-    d.log('Not authenticated, redirecting to login page');
-    goto('/login');
-    return false;
-  }
-  d.log('Authentication verified');
-  return true;
-}
+// /**
+//  * Validation function for route guards
+//  * Redirects to login if not authenticated
+//  */
+// export function requireAuth(): boolean {
+//   if (browser && !isAppReady()) {
+//     d.log('Not authenticated, redirecting to login page');
+//     goto('/login');
+//     return false;
+//   }
+//   d.log('Authentication verified');
+//   return true;
+// }

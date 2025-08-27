@@ -1,4 +1,3 @@
-
 // src/lib/client/stores/nostr.ts
 import NDKSvelte from '@nostr-dev-kit/ndk-svelte';
 import NDK, {
@@ -11,7 +10,7 @@ import NDK, {
   normalizeRelayUrl,
 } from '@nostr-dev-kit/ndk';
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { BROWSER as browser } from 'esm-env'
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import { publishUnpublishedEvents, startUnpublishedEventsMonitor, stopUnpublishedEventsMonitor } from '$lib/services/unpublishedEvents.js';
 import { createDebug } from '@/utils/debug.js';
