@@ -7,6 +7,7 @@
 	import LoginNsecView from './login-nsec-view.svelte';
 	import LoginView from './login-view.svelte';
 	import MainView from './main-view.svelte';
+	import SettingsView from './settings-view.svelte';
 	import TransactionDetailsView from './transaction-details-view.svelte';
 	import TransactionHistoryView from './transaction-history-view.svelte';
 	// Import all view components
@@ -34,6 +35,7 @@
 		'main': MainView,
 		'transaction-history': TransactionHistoryView,
 		'transaction-details': TransactionDetailsView,
+		'settings': SettingsView,
 		// receive: NostrReceiveView,
 		// send: NostrSendView,
 		// settings: NostrSettingsView,
