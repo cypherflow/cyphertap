@@ -1,4 +1,4 @@
-<!-- src/lib/components/NostrUserMenu.svelte -->
+<!-- src/lib/components/cyphertap/cyphertap.svelte -->
 <script lang="ts">
 	import {
 		initUserMenuNavigation,
@@ -7,7 +7,7 @@
 	} from '$lib/stores/navigation.js';
 	import { MediaQuery } from 'svelte/reactivity';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import ViewRouter from './view-router.svelte';
+	import ViewRouter from './views/view-router.svelte';
 	import CyphertapTrigger from './cyphertap-trigger.svelte';
 
 	import * as Drawer from '$lib/components/ui/drawer/index.js';

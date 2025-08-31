@@ -1,14 +1,14 @@
-<!-- src/lib/components/nostr/ViewRouter.svelte -->
+<!-- src/lib/components/cyphertap/views/view-router.svelte -->
 <script lang="ts">
 	import { currentView, inTransition } from '$lib/stores/navigation.js';
-	import LoginGenerateKeyView from './views/login-generate-key-view.svelte';
-	import LoginLinkDeviceView from './views/login-link-device-view.svelte';
-	import LoginNip_07View from './views/login-nip-07-view.svelte';
-	import LoginNsecView from './views/login-nsec-view.svelte';
-	import LoginView from './views/login-view.svelte';
-	import MainView from './views/main-view.svelte';
-	import TransactionDetailsView from './views/transaction-details-view.svelte';
-	import TransactionHistoryView from './views/transaction-history-view.svelte';
+	import LoginGenerateKeyView from './login-generate-key-view.svelte';
+	import LoginLinkDeviceView from './login-link-device-view.svelte';
+	import LoginNip_07View from './login-nip-07-view.svelte';
+	import LoginNsecView from './login-nsec-view.svelte';
+	import LoginView from './login-view.svelte';
+	import MainView from './main-view.svelte';
+	import TransactionDetailsView from './transaction-details-view.svelte';
+	import TransactionHistoryView from './transaction-history-view.svelte';
 	// Import all view components
 	// import NostrMainView from './NostrMainView.svelte';
 	// import NostrLoginView from './NostrLoginView.svelte';
