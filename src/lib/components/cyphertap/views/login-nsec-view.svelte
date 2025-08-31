@@ -6,7 +6,8 @@
 	import ViewContainer from './view-container.svelte'
 	import { slide } from 'svelte/transition';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { ChevronLeft, CircleAlert } from '@lucide/svelte';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert'
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left'
 	import Input from '$lib/components/ui/input/input.svelte';
     import * as Alert from "$lib/components/ui/alert/index.js";
 

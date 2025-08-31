@@ -1,6 +1,7 @@
 <!-- src/lib/components/nostr/ViewRouter.svelte -->
 <script lang="ts">
 	import { currentView, inTransition } from '$lib/stores/navigation.js';
+	import LoginLinkDeviceView from './views/login-link-device-view.svelte';
 	import LoginNsecView from './views/login-nsec-view.svelte';
 	import LoginView from './views/login-view.svelte';
 	// Import all view components
@@ -22,7 +23,7 @@
 	const viewComponents = {
 		// main: NostrMainView,
 		login: LoginView,
-		// 'link-device': LinkDeviceLoginView,
+		'link-device': LoginLinkDeviceView,
 		'private-key': LoginNsecView,
 		// receive: NostrReceiveView,
 		// send: NostrSendView,
