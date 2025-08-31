@@ -6,6 +6,7 @@
 	import LoginNip_07View from './views/login-nip-07-view.svelte';
 	import LoginNsecView from './views/login-nsec-view.svelte';
 	import LoginView from './views/login-view.svelte';
+	import MainView from './views/main-view.svelte';
 	// Import all view components
 	// import NostrMainView from './NostrMainView.svelte';
 	// import NostrLoginView from './NostrLoginView.svelte';
@@ -23,12 +24,12 @@
 	export let isDesktop = true;
 	// Component mapping
 	const viewComponents = {
-		// main: NostrMainView,
 		'login': LoginView,
 		'login-private-key': LoginNsecView,
 		'login-link-device': LoginLinkDeviceView,
 		'login-nip-07': LoginNip_07View,
 		'login-generate-key': LoginGenerateKeyView,
+		'main': MainView,
 		// receive: NostrReceiveView,
 		// send: NostrSendView,
 		// settings: NostrSettingsView,
