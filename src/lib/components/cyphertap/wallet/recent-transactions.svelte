@@ -34,7 +34,7 @@
 	<div class="mb-1 flex items-center justify-between">
 		<h3 class="text-sm font-medium">Recent Transactions</h3>
 		{#if $walletTransactions.length > limit}
-			<Button variant="ghost" class="text-xs" onclick={() => navigateTo('transactions')}>
+			<Button variant="ghost" class="text-xs" onclick={() => navigateTo('transaction-history')}>
 				View all
 				<ChevronRight class="ml-1 h-3 w-3" />
 			</Button>
@@ -57,7 +57,7 @@
 					{@const displayDescription = formatTransactionDescription(formattedTx.description)}
 					<button
 						class="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent"
-						onclick={() => navigateTo('transaction-detail', { tx })}
+						onclick={() => navigateTo('transaction-details', { tx })}
 					>
 						<div class="flex items-center">
 							<div

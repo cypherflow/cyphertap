@@ -7,6 +7,8 @@
 	import LoginNsecView from './views/login-nsec-view.svelte';
 	import LoginView from './views/login-view.svelte';
 	import MainView from './views/main-view.svelte';
+	import TransactionDetailsView from './views/transaction-details-view.svelte';
+	import TransactionHistoryView from './views/transaction-history-view.svelte';
 	// Import all view components
 	// import NostrMainView from './NostrMainView.svelte';
 	// import NostrLoginView from './NostrLoginView.svelte';
@@ -30,6 +32,8 @@
 		'login-nip-07': LoginNip_07View,
 		'login-generate-key': LoginGenerateKeyView,
 		'main': MainView,
+		'transaction-history': TransactionHistoryView,
+		'transaction-details': TransactionDetailsView,
 		// receive: NostrReceiveView,
 		// send: NostrSendView,
 		// settings: NostrSettingsView,

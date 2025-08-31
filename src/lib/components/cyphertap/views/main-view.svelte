@@ -29,7 +29,7 @@
 				variant="ghost"
 				size="icon"
 				class="h-8 w-8"
-				onclick={() => navigateTo('transactions')}
+				onclick={() => navigateTo('transaction-history')}
 			>
 				<Clock class="h-4 w-4" />
 			</Button>

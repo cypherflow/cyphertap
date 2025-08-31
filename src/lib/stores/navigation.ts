@@ -13,11 +13,26 @@ export type ViewName =
   | 'main'
   | 'receive'
   | 'send'
-  | 'transactions'
   | 'settings'
-  | 'qr-scanner'
-  | 'transaction-detail';
+  | 'transaction-history'
+  | 'transaction-details'
+  | 'qr-scanner';
 
+// View hierarchy for animation direction
+const viewHierarchy: Record<ViewName, number> = {
+  'login': 0,
+  'login-private-key': 1,
+  'login-link-device': 1,
+  'login-nip-07': 1,
+  'login-generate-key': 1,
+  'main': 2,
+  'receive': 3,
+  'send': 3,
+  'settings': 3,
+  'transaction-history': 3,
+  'transaction-details': 4,
+  'qr-scanner': 4
+};
 // Navigation context type
 export type NavigationContext = {
   sourceView: ViewName;
@@ -31,21 +46,7 @@ export const direction = writable<number>(1);
 export const context = writable<NavigationContext>({ sourceView: 'login' });
 export const inTransition = writable<boolean>(false);
 
-// View hierarchy for animation direction
-const viewHierarchy: Record<ViewName, number> = {
-  login: 0,
-  'private-key': 1,
-  'generate-key': 1,
-  'extension-login': 1,
-  'link-device': 1,
-  main: 2,
-  receive: 3,
-  send: 3,
-  transactions: 3,
-  settings: 3,
-  'transaction-detail': 4,
-  'qr-scanner': 4
-};
+
 
 export function initUserMenuNavigation() {
   console.log("setting inTransition: false")
