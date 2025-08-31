@@ -2,6 +2,7 @@
 <script lang="ts">
 	import { currentView, inTransition } from '$lib/stores/navigation.js';
 	import LoginLinkDeviceView from './views/login-link-device-view.svelte';
+	import LoginNip_07View from './views/login-nip-07-view.svelte';
 	import LoginNsecView from './views/login-nsec-view.svelte';
 	import LoginView from './views/login-view.svelte';
 	// Import all view components
@@ -22,9 +23,10 @@
 	// Component mapping
 	const viewComponents = {
 		// main: NostrMainView,
-		login: LoginView,
-		'link-device': LoginLinkDeviceView,
-		'private-key': LoginNsecView,
+		'login': LoginView,
+		'login-private-key': LoginNsecView,
+		'login-link-device': LoginLinkDeviceView,
+		'login-nip-07': LoginNip_07View,
 		// receive: NostrReceiveView,
 		// send: NostrSendView,
 		// settings: NostrSettingsView,

@@ -6,7 +6,10 @@
 	import { onMount } from 'svelte';
 	import ViewContainer from './view-container.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { LogIn, UserPlus, Key, MonitorSmartphone } from '@lucide/svelte';
+	import LogIn from '@lucide/svelte/icons/log-in'
+	import UserPlus from '@lucide/svelte/icons/user-plus'
+	import Key from '@lucide/svelte/icons/key'
+	import MonitorSmartphone from '@lucide/svelte/icons/monitor-smartphone'
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 
 	let hasNostrExtension = $state<boolean>(false);
@@ -30,7 +33,7 @@
 			variant="default"
 			class="w-full justify-start"
 			disabled={appState.status === InitStatus.INITIALIZING}
-			onclick={() => navigateTo('generate-key')}
+			onclick={() => navigateTo('login-generate-key')}
 		>
 			<UserPlus class="mr-2 h-4 w-4" />
 			Create new account
@@ -41,7 +44,7 @@
 				variant="outline"
 				class="w-full justify-start"
 				disabled={appState.status === InitStatus.INITIALIZING}
-				onclick={() => navigateTo('link-device')}
+				onclick={() => navigateTo('login-link-device')}
 			>
 				<MonitorSmartphone class="mr-2 h-4 w-4" />
 				Link from another device
@@ -56,7 +59,7 @@
 			variant="outline"
 			class="w-full justify-start"
 			disabled={!hasNostrExtension || $isConnecting || appState.status === InitStatus.INITIALIZING}
-			onclick={() => navigateTo('extension-login')}
+			onclick={() => navigateTo('login-nip-07')}
 		>
 			<LogIn class="mr-2 h-4 w-4" />
 			{hasNostrExtension ? 'Continue with Nostr extension' : 'No Nostr Extension Found'}
@@ -67,7 +70,7 @@
 				variant="outline"
 				class="w-full justify-start"
 				disabled={appState.status === InitStatus.INITIALIZING}
-				onclick={() => navigateTo('private-key')}
+				onclick={() => navigateTo('login-private-key')}
 			>
 				<Key class="mr-2 h-4 w-4" />
 				Sign in with Private Key

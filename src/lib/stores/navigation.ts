@@ -5,18 +5,18 @@ import { isLoggedIn } from './nostr.js';
 
 // Define types for the views
 export type ViewName =
-  | 'main'
   | 'login'
-  | 'private-key'
+  | 'login-private-key'
+  | 'login-link-device'  
+  | 'login-nip-07'
+  | 'login-generate-key'
+  | 'main'
   | 'receive'
   | 'send'
   | 'transactions'
   | 'settings'
   | 'qr-scanner'
-  | 'transaction-detail'
-  | 'link-device'
-  | 'generate-key'
-  | 'extension-login';
+  | 'transaction-detail';
 
 // Navigation context type
 export type NavigationContext = {
