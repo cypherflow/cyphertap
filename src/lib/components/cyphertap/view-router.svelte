@@ -1,6 +1,7 @@
 <!-- src/lib/components/nostr/ViewRouter.svelte -->
 <script lang="ts">
 	import { currentView, inTransition } from '$lib/stores/navigation.js';
+	import LoginGenerateKeyView from './views/login-generate-key-view.svelte';
 	import LoginLinkDeviceView from './views/login-link-device-view.svelte';
 	import LoginNip_07View from './views/login-nip-07-view.svelte';
 	import LoginNsecView from './views/login-nsec-view.svelte';
@@ -27,6 +28,7 @@
 		'login-private-key': LoginNsecView,
 		'login-link-device': LoginLinkDeviceView,
 		'login-nip-07': LoginNip_07View,
+		'login-generate-key': LoginGenerateKeyView,
 		// receive: NostrReceiveView,
 		// send: NostrSendView,
 		// settings: NostrSettingsView,
