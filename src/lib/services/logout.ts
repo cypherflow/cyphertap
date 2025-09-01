@@ -1,7 +1,6 @@
 // src/lib/client/services/logout.ts
 import { get } from 'svelte/store';
-import { browser } from '$app/environment';
-import { goto } from '$app/navigation';
+import { BROWSER as browser } from 'esm-env';
 
 // Import all the stores and methods we need to clean up
 import { logout as nostrLogout, currentUser } from '$lib/stores/nostr.js';
@@ -46,12 +45,6 @@ function clearNostrCache(npub: string): Promise<void> {
 export async function logout(
   options: {
     /**
-     * Whether to redirect to home page after logout
-     * @default true
-     */
-    redirectToHome?: boolean;
-
-    /**
      * Whether to clear database cache
      * @default false
      */
@@ -59,7 +52,7 @@ export async function logout(
   } = {}
 ): Promise<void> {
   // Set defaults
-  const { redirectToHome = true, clearDatabase = false } = options;
+  const { clearDatabase = false } = options;
 
   try {
     // Update app state
@@ -89,11 +82,6 @@ export async function logout(
     nostrLogout();
 
     d.log('Logout complete');
-
-    // Redirect to home page if requested and in browser
-    if (redirectToHome && browser) {
-      goto('/');
-    }
   } catch (error) {
     d.error('Error during logout:', error);
     throw error;
