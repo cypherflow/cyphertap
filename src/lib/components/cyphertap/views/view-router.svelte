@@ -8,6 +8,7 @@
 	import LoginView from './login-view.svelte';
 	import MainView from './main-view.svelte';
 	import ReceiveView from './receive-view.svelte';
+	import SendView from './send-view.svelte';
 	import SettingsView from './settings-view.svelte';
 	import TransactionDetailsView from './transaction-details-view.svelte';
 	import TransactionHistoryView from './transaction-history-view.svelte';
@@ -35,6 +36,7 @@
 		'login-generate-key': LoginGenerateKeyView,
 		'main': MainView,
 		'receive': ReceiveView,
+		'send': SendView,
 		'transaction-history': TransactionHistoryView,
 		'transaction-details': TransactionDetailsView,
 		'settings': SettingsView,
