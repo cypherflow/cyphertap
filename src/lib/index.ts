@@ -1,4 +1,13 @@
-// Reexport your entry components here
-import Cyphertap from '$lib/components/cyphertap/cyphertap.svelte';
+// src/lib/index.ts
+// Main component
+export { default as Cyphertap } from '$lib/components/cyphertap/cyphertap.svelte';
 
-export { Cyphertap };
+// Programmatic API
+export { cyphertap } from '$lib/api/cyphertap-api.svelte.js';
+
+// // Utility functions
+// export { identifyScanType } from '$lib/stores/scan-store.js';
+// export { formatTransactionDescription } from '$lib/utils/tx.js';
+
+// // Types (if needed for consumers)
+// export type { ScanResult, ScanResultType } from '$lib/stores/scan-store.js';
