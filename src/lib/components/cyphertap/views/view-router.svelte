@@ -8,24 +8,12 @@
 	import LoginView from './login-view.svelte';
 	import MainView from './main-view.svelte';
 	import ReceiveView from './receive-view.svelte';
+	import ScannerView from './scanner-view.svelte';
 	import SendView from './send-view.svelte';
 	import SettingsView from './settings-view.svelte';
 	import TransactionDetailsView from './transaction-details-view.svelte';
 	import TransactionHistoryView from './transaction-history-view.svelte';
-	// Import all view components
-	// import NostrMainView from './NostrMainView.svelte';
-	// import NostrLoginView from './NostrLoginView.svelte';
-	// import NostrPrivateKeyView from './NostrPrivateKeyView.svelte';
-	// import NostrReceiveView from './NostrReceiveView.svelte';
-	// import NostrSendView from './NostrSendView.svelte';
-	// import NostrSettingsView from './NostrSettingsView.svelte';
-	// import NostrTransactionsView from './NostrTransactionsView.svelte';
-	// import NostrTransactionDetailView from './NostrTransactionDetailsView.svelte';
-	// import QRScannerView from './QRScannerView.svelte';
-	// import LinkDeviceLoginView from './LinkDeviceLoginView.svelte';
-	// import NostrGenerateKeyView from './NostrGenerateKeyView.svelte';
-	// import NostrExtensionView from './NostrExtensionView.svelte';
-	// New prop to determine if we're in a drawer or popover
+	
 	export let isDesktop = true;
 	// Component mapping
 	const viewComponents = {
@@ -40,14 +28,7 @@
 		'transaction-history': TransactionHistoryView,
 		'transaction-details': TransactionDetailsView,
 		'settings': SettingsView,
-		// receive: NostrReceiveView,
-		// send: NostrSendView,
-		// settings: NostrSettingsView,
-		// transactions: NostrTransactionsView,
-		// 'transaction-detail': NostrTransactionDetailView,
-		// 'qr-scanner': QRScannerView,
-		//   'generate-key': NostrGenerateKeyView,
-		//   'extension-login': NostrExtensionView
+		'qr-scanner': ScannerView
 	};
 </script>
 
