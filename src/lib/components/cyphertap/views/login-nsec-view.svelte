@@ -1,7 +1,7 @@
 <!-- src/lib/components/nostr/NostrPrivateKeyView.svelte -->
 <script lang="ts">
 	import { isConnecting, login } from '$lib/stores/nostr.js';
-	import { initializeApp, appState, InitStatus } from '$lib/services/init.svelte.js'
+	import { appState, InitStatus } from '$lib/services/init.svelte.js'
 	import { navigateTo } from '$lib/stores/navigation.js'
 	import ViewContainer from './view-container.svelte'
 	import { slide } from 'svelte/transition';
@@ -27,25 +27,11 @@
 
 		try {
 			errorMessage = '';
-			// Step 1: Login with private key
-			const loginSuccess = await login({
+			await login({
 				method: 'private-key',
 				privateKey
 			});
 
-			if (!loginSuccess) {
-				errorMessage = 'Login failed. Please check your private key and try again.';
-				return;
-			}
-
-			// Step 2: Initialize app with the logged in user
-			const initResult = await initializeApp(false);
-			if (initResult.initialized) {
-				navigateTo('main');
-				privateKey = ''; // Clear the private key from memory
-			} else {
-				errorMessage = appState.error || 'App initialization failed';
-			}
 		} catch (error) {
 			if (error instanceof Error) {
 				errorMessage = error.message;

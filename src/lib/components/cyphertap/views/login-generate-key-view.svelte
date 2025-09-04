@@ -1,7 +1,7 @@
 <!-- src/lib/components/nostr/NostrGenerateKeyView.svelte -->
 <script lang="ts">
 	import { generateNewKeypair, login } from '$lib/stores/nostr.js';
-	import { initializeApp, appState, InitStatus } from '$lib/services/init.svelte';
+	import { appState, InitStatus } from '$lib/services/init.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { isUserMenuOpen, navigateTo } from '$lib/stores/navigation.js';
 	import { onMount } from 'svelte';
@@ -21,30 +21,12 @@
 			isGenerating = true;
 			errorMessage = '';
 
-			// Step 1: Generate new keypair
 			const privateKey = generateNewKeypair();
 
-			// Step 2: Login with the new private key
-			const loginSuccess = await login({
+			await login({
 				method: 'private-key',
 				privateKey
 			});
-
-			if (!loginSuccess) {
-				errorMessage = 'Login failed with new key';
-				return;
-			}
-
-			// Step 3: Initialize app with the logged in user
-			const initResult = await initializeApp(false);
-
-			if (initResult.initialized) {
-				// go quickly to main and then close the user menu so they can focus on the chat interface
-				navigateTo('main');
-				isUserMenuOpen.set(false);
-			} else {
-				errorMessage = appState.error || 'App initialization failed';
-			}
 		} catch (error) {
 			if (error instanceof Error) {
 				errorMessage = error.message;

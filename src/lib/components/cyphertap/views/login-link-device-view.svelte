@@ -4,7 +4,6 @@
 	import { scanResult } from '$lib/stores/scan-store.js';
 	import { login } from '$lib/stores/nostr.js';
 	import {
-		initializeApp,
 		appState,
 		InitStatus
 	} from '$lib/services/init.svelte';
@@ -27,7 +26,7 @@
 
 	// Check for scanned result on mount
 	onMount(() => {
-		// Check if we have a scanned lightning invoice from the store
+		// Check if we have a scanned ncrypt key
 		if ($scanResult && $scanResult.type === 'link' && $scanResult.data) {
 			// Extract ONLY the ncryptsec part - this is critical for bech32 decoding
 			const match = $scanResult.data.match(/(ncryptsec1[a-zA-Z0-9]+)/);
@@ -74,25 +73,10 @@
 
 				console.log('Successfully decrypted private key');
 
-				// Step 1: Login with the decrypted private key
-				const loginSuccess = await login({
+				await login({
 					method: 'private-key',
 					privateKey
 				});
-
-				if (!loginSuccess) {
-					throw new Error('Failed to login with decrypted key');
-				}
-
-				// Step 2: Initialize the app with the authenticated user
-				const initResult = await initializeApp(false);
-
-				if (initResult.initialized) {
-					// Navigate to main view on success
-					navigateTo('main');
-				} else {
-					errorMessage = appState.error || 'App initialization failed after login';
-				}
 			} catch (decryptError: any) {
 				console.error('Decryption error:', decryptError);
 

@@ -6,11 +6,11 @@ import {
   ndkInstance,
   currentUser,
   autoLogin,
-  EXTENSION_LOGIN_MARKER
+  EXTENSION_LOGIN
 } from '$lib/stores/nostr.js';
 import { initializeWallet } from '$lib/stores/wallet.js';
 import { createDebug } from '$lib/utils/debug.js';
-import { initUserMenuNavigation } from '../stores/navigation.js';
+import { initNavigation } from '../stores/navigation.js';
 import { startUnpublishedEventsMonitor } from './unpublishedEvents.js';
 
 // Create a debug logger
@@ -61,14 +61,14 @@ export async function initializeApp(skipAuth = false): Promise<{
       } catch (error) {
         d.error('Auto-login error:', error);
         // If extension marker exists but extension is not available
-        if (localStorage.getItem(EXTENSION_LOGIN_MARKER) === 'true' && !window.nostr) {
+        if (localStorage.getItem(EXTENSION_LOGIN) === 'true' && !window.nostr) {
           appState.error = 'Nostr extension not found. Please install or enable your extension.';
         } else {
           appState.error = error instanceof Error ? error.message : 'Auto-login failed';
         }
 
         // Clear any problematic markers
-        localStorage.removeItem(EXTENSION_LOGIN_MARKER);
+        localStorage.removeItem(EXTENSION_LOGIN);
         return { initialized: false };
       }
     } else {
@@ -100,17 +100,14 @@ export async function initializeApp(skipAuth = false): Promise<{
     d.log('NDK and user available, initializing components');
     console.log(ndk.activeUser?.pubkey, user.pubkey)
 
-    // // Initialize synchronous components immediately
-    // initModelDetails();
-    // initChatList();
-    initUserMenuNavigation();
+    initNavigation();
 
     // Initialize async components
-    await initializeWallet();
+    // await initializeWallet();
 
     // Start monitoring for unpublished events
-    d.log('Starting unpublished events monitor');
-    startUnpublishedEventsMonitor();
+    // d.log('Starting unpublished events monitor');
+    // startUnpublishedEventsMonitor();
 
     // Mark initialization as complete
     d.log('App initialization complete');
@@ -133,17 +130,3 @@ export async function initializeApp(skipAuth = false): Promise<{
 export function isAppReady(): boolean {
   return !!get(currentUser) && appState.isInitialized;
 }
-
-// /**
-//  * Validation function for route guards
-//  * Redirects to login if not authenticated
-//  */
-// export function requireAuth(): boolean {
-//   if (browser && !isAppReady()) {
-//     d.log('Not authenticated, redirecting to login page');
-//     goto('/login');
-//     return false;
-//   }
-//   d.log('Authentication verified');
-//   return true;
-// }

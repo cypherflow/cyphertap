@@ -1,388 +1,374 @@
 <!-- src/routes/+page.svelte -->
 <script lang="ts">
-  import { Cyphertap, cyphertap } from '$lib/index.js';
-  import { toast } from 'svelte-sonner';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Input from '$lib/components/ui/input/input.svelte';
+	import { Cyphertap, cyphertap } from '$lib/index.js';
+	import { copyToClipboard } from '$lib/utils/clipboard.js';
+	import Copy from '@lucide/svelte/icons/copy';
+	import { toast } from 'svelte-sonner';
 
-  // Demo state
-  let results = $state({
-    npub: '',
-    invoice: '',
-    token: '',
-    signedEvent: '',
-    encryptedMessage: '',
-    decryptedMessage: '',
-    connectionStatus: '',
-    userHex: '',
-    mints: [] as string[],
-    publishedEventId: ''
-  });
+	// Demo state
+	let results = $state({
+		npub: '',
+		invoice: '',
+		token: '',
+		signedEvent: '',
+		encryptedMessage: '',
+		decryptedMessage: '',
+		connectionStatus: '',
+		userHex: '',
+		mints: [] as string[],
+		publishedEventId: ''
+	});
 
-  let inputs = $state({
-    invoiceAmount: '1',
-    tokenAmount: '1',
-    textNote: 'Hello Nostr from CypherTap!',
-    messageToEncrypt: 'Secret message',
-    recipientPubkey: '',
-    encryptedToDecrypt: '',
-    senderPubkey: '',
-    bolt11ToPay: ''
-  });
+	let inputs = $state({
+		invoiceAmount: '',
+		tokenAmount: '',
+		cashuToken: '',
+		textNote: 'Hello Nostr from CypherTap!',
+		messageToEncrypt: 'Secret message',
+		recipientPubkey: '',
+		encryptedToDecrypt: '',
+		senderPubkey: '',
+		bolt11ToPay: ''
+	});
 
-  // Helper function to handle async operations with error handling
-  async function handleAsync(operation: () => Promise<void>, errorMessage: string) {
-    try {
-      await operation();
-    } catch (error) {
-      console.error(errorMessage, error);
-      toast.error(`${errorMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
+	// Helper function to handle async operations with error handling
+	async function handleAsync(operation: () => Promise<void>, errorMessage: string) {
+		try {
+			await operation();
+		} catch (error) {
+			console.error(errorMessage, error);
+			toast.error(`${errorMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
 
-  // User info functions
-  function getNpub() {
-    const npub = cyphertap.getUserNpub();
-    results.npub = npub || 'Not available';
-    toast.success('NPub retrieved!');
-  }
+	// User info functions
+	function getNpub() {
+		const npub = cyphertap.getUserNpub();
+		results.npub = npub || 'Not available';
+		toast.success('NPub retrieved!');
+	}
 
-  function getUserHex() {
-    const hex = cyphertap.getUserHex();
-    results.userHex = hex || 'Not available';
-    toast.success('User hex retrieved!');
-  }
+	function getUserHex() {
+		const hex = cyphertap.getUserHex();
+		results.userHex = hex || 'Not available';
+		toast.success('User hex retrieved!');
+	}
 
-  function getConnectionStatus() {
-    const status = cyphertap.getConnectionStatus();
-    results.connectionStatus = `${status.connected}/${status.total} relays connected`;
-    toast.success('Connection status retrieved!');
-  }
+	function getConnectionStatus() {
+		const status = cyphertap.getConnectionStatus();
+		results.connectionStatus = `${status.connected}/${status.total} relays connected`;
+		toast.success('Connection status retrieved!');
+	}
 
-  function getMints() {
-    const mints = cyphertap.getMints();
-    results.mints = mints;
-    toast.success(`Retrieved ${mints.length} mints`);
-  }
 
-  // Lightning functions
-  async function generateInvoice() {
-    await handleAsync(async () => {
-      const amount = parseInt(inputs.invoiceAmount);
-      const result = await cyphertap.createLightningInvoice(amount, `${amount} sat invoice from CypherTap demo`);
-      results.invoice = result.bolt11;
-      toast.success(`${amount} sat invoice generated!`);
-    }, 'Failed to generate invoice');
-  }
+	// Lightning functions
+	async function generateInvoice() {
+		await handleAsync(async () => {
+			const amount = parseInt(inputs.invoiceAmount);
+			const result = await cyphertap.createLightningInvoice(
+				amount,
+				`${amount} sat invoice from CypherTap demo`
+			);
+			results.invoice = result.bolt11;
+			toast.success(`${amount} sat invoice generated!`);
+		}, 'Failed to generate invoice');
+	}
 
-  async function payInvoice() {
-    await handleAsync(async () => {
-      if (!inputs.bolt11ToPay.trim()) {
-        toast.error('Please enter a BOLT11 invoice');
-        return;
-      }
-      const result = await cyphertap.sendLightningPayment(inputs.bolt11ToPay);
-      if (result.success) {
-        toast.success('Payment sent successfully!');
-        inputs.bolt11ToPay = '';
-      }
-    }, 'Failed to send payment');
-  }
+	async function payInvoice() {
+		await handleAsync(async () => {
+			if (!inputs.bolt11ToPay.trim()) {
+				toast.error('Please enter a BOLT11 invoice');
+				return;
+			}
+			const result = await cyphertap.sendLightningPayment(inputs.bolt11ToPay);
+			if (result.success) {
+				toast.success('Payment sent successfully!');
+				inputs.bolt11ToPay = '';
+			}
+		}, 'Failed to send payment');
+	}
 
-  // Ecash functions
-  async function generateToken() {
-    await handleAsync(async () => {
-      const amount = parseInt(inputs.tokenAmount);
-      const result = await cyphertap.generateEcashToken(amount, `${amount} sat token from CypherTap demo`);
-      results.token = result.token;
-      toast.success(`${amount} sat ecash token generated!`);
-    }, 'Failed to generate token');
-  }
+	// Ecash functions
+	async function generateToken() {
+		await handleAsync(async () => {
+			const amount = parseInt(inputs.tokenAmount);
+			const result = await cyphertap.generateEcashToken(
+				amount,
+				`${amount} sat token from CypherTap demo`
+			);
+			results.token = result.token;
+			toast.success(`${amount} sat ecash token generated!`);
+		}, 'Failed to generate token');
+	}
 
-  // Nostr functions
-  async function publishNote() {
-    await handleAsync(async () => {
-      if (!inputs.textNote.trim()) {
-        toast.error('Please enter some text');
-        return;
-      }
-      const event = await cyphertap.publishTextNote(inputs.textNote);
-      results.publishedEventId = event.id;
-      toast.success('Note published to Nostr!');
-    }, 'Failed to publish note');
-  }
+	async function receiveToken() {
+		await handleAsync(async () => {
+			const result = await cyphertap.receiveEcashToken(inputs.cashuToken);
+			toast.success(`${result.amount} sat ecash token received!`);
+		}, 'Failed to receive token');
+	}
 
-  async function signEvent() {
-    await handleAsync(async () => {
-      const event = await cyphertap.signEvent({
-        kind: 1,
-        content: 'This is a signed event from CypherTap demo'
-      });
-      results.signedEvent = JSON.stringify({
-        id: event.id,
-        pubkey: event.pubkey,
-        signature: event.signature.substring(0, 20) + '...'
-      }, null, 2);
-      toast.success('Event signed!');
-    }, 'Failed to sign event');
-  }
+	// Nostr functions
+	async function publishNote() {
+		await handleAsync(async () => {
+			if (!inputs.textNote.trim()) {
+				toast.error('Please enter some text');
+				return;
+			}
+			const event = await cyphertap.publishTextNote(inputs.textNote);
+			results.publishedEventId = event.id;
+			toast.success('Note published to Nostr!');
+		}, 'Failed to publish note');
+	}
 
-  // Encryption functions
-  async function encryptMessage() {
-    await handleAsync(async () => {
-      if (!inputs.messageToEncrypt.trim() || !inputs.recipientPubkey.trim()) {
-        toast.error('Please enter message and recipient pubkey');
-        return;
-      }
-      
-      let recipientHex = inputs.recipientPubkey;
-      if (recipientHex.startsWith('npub')) {
-        toast.error('Please use hex pubkey (not npub) for now');
-        return;
-      }
+	async function signEvent() {
+		await handleAsync(async () => {
+			const event = await cyphertap.signEvent({
+				kind: 1,
+				content: 'This is a signed event from CypherTap demo'
+			});
+			results.signedEvent = JSON.stringify(
+				{
+					id: event.id,
+					pubkey: event.pubkey,
+					signature: event.signature.substring(0, 20) + '...'
+				},
+				null,
+				2
+			);
+			toast.success('Event signed!');
+		}, 'Failed to sign event');
+	}
 
-      const encrypted = await cyphertap.encrypt(inputs.messageToEncrypt, recipientHex);
-      results.encryptedMessage = encrypted;
-      toast.success('Message encrypted!');
-    }, 'Failed to encrypt message');
-  }
+	// Encryption functions
+	async function encryptMessage() {
+		await handleAsync(async () => {
+			if (!inputs.messageToEncrypt.trim() || !inputs.recipientPubkey.trim()) {
+				toast.error('Please enter message and recipient pubkey');
+				return;
+			}
 
-  async function decryptMessage() {
-    await handleAsync(async () => {
-      if (!inputs.encryptedToDecrypt.trim() || !inputs.senderPubkey.trim()) {
-        toast.error('Please enter encrypted content and sender pubkey');
-        return;
-      }
+			let recipientHex = inputs.recipientPubkey;
+			if (recipientHex.startsWith('npub')) {
+				toast.error('Please use hex pubkey (not npub) for now');
+				return;
+			}
 
-      const decrypted = await cyphertap.decrypt(inputs.encryptedToDecrypt, inputs.senderPubkey);
-      results.decryptedMessage = decrypted;
-      toast.success('Message decrypted!');
-    }, 'Failed to decrypt message');
-  }
+			const encrypted = await cyphertap.encrypt(inputs.messageToEncrypt, recipientHex);
+			results.encryptedMessage = encrypted;
+			toast.success('Message encrypted!');
+		}, 'Failed to encrypt message');
+	}
 
-  // Helper to copy text to clipboard
-  async function copyToClipboard(text: string, label: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(`${label} copied to clipboard!`);
-    } catch (error) {
-      toast.error('Failed to copy to clipboard');
-    }
-  }
+	async function decryptMessage() {
+		await handleAsync(async () => {
+			if (!inputs.encryptedToDecrypt.trim() || !inputs.senderPubkey.trim()) {
+				toast.error('Please enter encrypted content and sender pubkey');
+				return;
+			}
 
-  // Debug logging to see reactive changes
-  $effect(() => {
-    console.log('🔄 Reactive state changed:', {
-      isLoggedIn: cyphertap.isLoggedIn,
-      isReady: cyphertap.isReady,
-      balance: cyphertap.balance,
-      npub: cyphertap.npub
-    });
-  });
+			const decrypted = await cyphertap.decrypt(inputs.encryptedToDecrypt, inputs.senderPubkey);
+			results.decryptedMessage = decrypted;
+			toast.success('Message decrypted!');
+		}, 'Failed to decrypt message');
+	}
+
+
+	// Debug logging to see reactive changes
+	$effect(() => {
+		console.log('🔄 Reactive state changed:', {
+			isLoggedIn: cyphertap.isLoggedIn,
+			isReady: cyphertap.isReady,
+			balance: cyphertap.balance,
+			npub: cyphertap.npub
+		});
+	});
 </script>
 
-<div class="container mx-auto max-w-4xl p-6">
-  <header class="mb-8 text-center">
-    <h1 class="mb-4 text-4xl font-bold">CypherTap Component Library</h1>
-    <p class="text-lg text-muted-foreground">
-      Nostr, Lightning and Ecash in a single button component
-    </p>
-  </header>
+<div class="container mx-auto max-w-4xl p-4">
+	<header class="mb-8 text-center">
+		<h1 class="mb-4 text-4xl font-bold">CypherTap Component Library</h1>
+		<p class="text-lg text-muted-foreground">
+			Nostr, Lightning and Ecash in a single Button component
+		</p>
+	</header>
 
-  <!-- Component Demo -->
-  <div class="mb-8 rounded-lg border p-6">
-    <h2 class="mb-4 text-2xl font-semibold">Component</h2>
-    <div class="flex flex-col items-center gap-4">
-      <Cyphertap />
-      <div class="text-center text-sm text-muted-foreground">
-        {#if cyphertap.isReady}
-          <p>✅ Ready - Balance: {cyphertap.balance} sats</p>
-          <p class="text-xs">Logged in as: {cyphertap.npub?.slice(0, 12)}...</p>
-        {:else if cyphertap.isLoggedIn}
-          <p>🔄 Logged in, initializing wallet...</p>
-        {:else}
-          <p>⏳ Click the button above to get started</p>
-        {/if}
-      </div>
-    </div>
-  </div>
+	<!-- Component Demo -->
+	<div class="mb-2 rounded-lg border p-6">
+		<h2 class="mb-4 text-2xl font-semibold">Component</h2>
+		<div class="flex flex-col items-center gap-4">
+			<Cyphertap />
+		</div>
+	</div>
 
-  <!-- Debug info to help troubleshoot -->
-  <div class="mb-4 rounded bg-gray-100 p-3 text-xs">
-    <strong>Debug Info:</strong>
-    isLoggedIn: {cyphertap.isLoggedIn},
-    isReady: {cyphertap.isReady},
-    balance: {cyphertap.balance},
-    npub: {cyphertap.npub || 'null'}
-  </div>
+	{#if cyphertap.isLoggedIn}
+		<!-- Real-time Status -->
+		<div class="my-6 rounded-lg border p-4">
+			<h3 class="mb-2 text-lg font-semibold">Real-time Status</h3>
+			<div class="grid gap-2 text-sm md:grid-cols-3">
+				<p><strong>Logged In:</strong> {cyphertap.isLoggedIn ? '✅' : '❌'}</p>
+				<p><strong>Wallet Ready:</strong> {cyphertap.isReady ? '✅' : '❌'}</p>
+			</div>
+			<div class="mt-2 text-xs break-all text-muted-foreground">
+				<p><strong>npub:</strong> {cyphertap.npub || 'Not available'}</p>
+			</div>
+		</div>
+	{/if}
 
-  {#if cyphertap.isReady}
-    <!-- API Demo -->
-    <div class="grid gap-6 md:grid-cols-2">
-      
-      <!-- User Info -->
-      <div class="rounded-lg border p-6">
-        <h3 class="mb-4 text-xl font-semibold">User Information</h3>
-        <div class="space-y-3">
-          <button class="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600" onclick={getNpub}>
-            Get NPub
-          </button>
-          {#if results.npub}
-            <div class="rounded bg-gray-100 p-2">
-              <p class="text-xs font-mono break-all">{results.npub}</p>
-              <button class="mt-1 text-xs text-blue-500" onclick={() => copyToClipboard(results.npub, 'NPub')}>
-                Copy
-              </button>
-            </div>
-          {/if}
+	{#if cyphertap.isReady}
+		<!-- API Demo -->
+		<div class="flex flex-col gap-6">
+			<!-- Nostr -->
+			<div class="rounded-lg border p-6">
+				<h3 class="mb-4 text-xl font-semibold">Nostr</h3>
+				<div class="flex flex-col space-y-3">
+					<Button onclick={getNpub}>Get NPub</Button>
+					{#if results.npub}
+						<div class="flex flex-row gap-2 p-2">
+							<p class="font-mono text-xs break-all">{results.npub}</p>
+							<Button
+								size="icon"
+								variant="outline"
+								onclick={() => copyToClipboard(results.npub, 'NPub')}
+							>
+								<Copy />
+							</Button>
+						</div>
+					{/if}
 
-          <button class="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600" onclick={getUserHex}>
-            Get User Hex
-          </button>
-          {#if results.userHex}
-            <div class="rounded bg-gray-100 p-2">
-              <p class="text-xs font-mono break-all">{results.userHex}</p>
-              <button class="mt-1 text-xs text-blue-500" onclick={() => copyToClipboard(results.userHex, 'Hex')}>
-                Copy
-              </button>
-            </div>
-          {/if}
+					<Button onclick={getUserHex}>Get User Hex</Button>
+					{#if results.userHex}
+						<div class="flex flex-row gap-2 p-2">
+							<p class="font-mono text-xs break-all">{results.userHex}</p>
+							<Button
+								size="icon"
+								variant="outline"
+								onclick={() => copyToClipboard(results.userHex, 'Hex')}
+							>
+								<Copy />
+							</Button>
+						</div>
+					{/if}
 
-          <button class="w-full rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600" onclick={getConnectionStatus}>
-            Get Connection Status
-          </button>
-          {#if results.connectionStatus}
-            <p class="text-sm">{results.connectionStatus}</p>
-          {/if}
+					<Button onclick={getConnectionStatus}>Get Connection Status</Button>
+					{#if results.connectionStatus}
+						<p class="text-sm">{results.connectionStatus}</p>
+					{/if}
 
-          <button class="w-full rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600" onclick={getMints}>
-            Get Mints
-          </button>
-          {#if results.mints.length > 0}
-            <div class="space-y-1">
-              {#each results.mints as mint, i}
-                <p class="text-xs font-mono break-all">{i + 1}. {mint}</p>
-              {/each}
-            </div>
-          {/if}
-        </div>
-      </div>
+					<Button onclick={signEvent}>Sign Demo Event</Button>
+					{#if results.signedEvent}
+						<div class="rounded p-2">
+							<pre class="text-xs break-all text-wrap">{results.signedEvent}</pre>
+						</div>
+					{/if}
 
-      <!-- Lightning -->
-      <div class="rounded-lg border p-6">
-        <h3 class="mb-4 text-xl font-semibold">Lightning</h3>
-        <div class="space-y-3">
-          <div class="flex gap-2">
-            <input 
-              type="number" 
-              bind:value={inputs.invoiceAmount} 
-              class="flex-1 rounded border px-2 py-1" 
-              placeholder="Amount in sats"
-            />
-            <button class="rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600" onclick={generateInvoice}>
-              Generate Invoice
-            </button>
-          </div>
-          {#if results.invoice}
-            <div class="rounded bg-gray-100 p-2">
-              <p class="text-xs font-mono break-all">{results.invoice}</p>
-              <button class="mt-1 text-xs text-blue-500" onclick={() => copyToClipboard(results.invoice, 'Invoice')}>
-                Copy Invoice
-              </button>
-            </div>
-          {/if}
+					<div class="flex gap-2">
+						<Button onclick={publishNote}>Publish Note</Button>
+						<Input
+							type="text"
+							bind:value={inputs.textNote}
+							placeholder="Text to publish"
+						/>
+					</div>
 
-          <div class="border-t pt-3">
-            <input 
-              type="text" 
-              bind:value={inputs.bolt11ToPay} 
-              class="w-full rounded border px-2 py-1 mb-2" 
-              placeholder="Paste BOLT11 invoice to pay"
-            />
-            <button class="w-full rounded bg-orange-500 px-4 py-2 text-white hover:bg-orange-600" onclick={payInvoice}>
-              Pay Invoice
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <!-- Ecash -->
-      <div class="rounded-lg border p-6">
-        <h3 class="mb-4 text-xl font-semibold">Ecash</h3>
-        <div class="space-y-3">
-          <div class="flex gap-2">
-            <input 
-              type="number" 
-              bind:value={inputs.tokenAmount} 
-              class="flex-1 rounded border px-2 py-1" 
-              placeholder="Amount in sats"
-            />
-            <button class="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600" onclick={generateToken}>
-              Generate Token
-            </button>
-          </div>
-          {#if results.token}
-            <div class="rounded bg-gray-100 p-2">
-              <p class="text-xs font-mono break-all">{results.token}</p>
-              <button class="mt-1 text-xs text-blue-500" onclick={() => copyToClipboard(results.token, 'Token')}>
-                Copy Token
-              </button>
-            </div>
-          {/if}
-        </div>
-      </div>
+					
+				</div>
+			</div>
 
-      <!-- Nostr -->
-      <div class="rounded-lg border p-6">
-        <h3 class="mb-4 text-xl font-semibold">Nostr</h3>
-        <div class="space-y-3">
-          <div>
-            <input 
-              type="text" 
-              bind:value={inputs.textNote} 
-              class="w-full rounded border px-2 py-1 mb-2" 
-              placeholder="Text to publish"
-            />
-            <button class="w-full rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600" onclick={publishNote}>
-              Publish Note
-            </button>
-          </div>
+			<!-- Lightning -->
+			<div class="rounded-lg border p-6">
+				<h3 class="mb-4 text-xl font-semibold">NIP-60 Ecash Wallet</h3>
+				<div class="space-y-3">
+					<div class="flex gap-2">
+						<Button onclick={generateInvoice} disabled={!inputs.invoiceAmount}
+							>Generate Invoice</Button
+						>
+						<Input type="number" bind:value={inputs.invoiceAmount} placeholder="Amount in sats" />
+						{#if results.invoice}
+							<div class="rounded p-2">
+								<p class="font-mono text-xs break-all">{results.invoice}</p>
+								<Button onclick={() => copyToClipboard(results.invoice, 'Invoice')}>
+									Copy Invoice
+								</Button>
+							</div>
+						{/if}
+					</div>
 
-          <button class="w-full rounded bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-600" onclick={signEvent}>
-            Sign Demo Event
-          </button>
-          {#if results.signedEvent}
-            <div class="rounded bg-gray-100 p-2">
-              <pre class="text-xs">{results.signedEvent}</pre>
-            </div>
-          {/if}
-        </div>
-      </div>
-    </div>
+					<div class="flex gap-2">
+						<Button onclick={payInvoice} disabled={!inputs.bolt11ToPay}>Pay Invoice</Button>
+						<Input
+							type="text"
+							bind:value={inputs.bolt11ToPay}
+							placeholder="Paste BOLT11 invoice to pay"
+						/>
+					</div>
+				</div>
+			</div>
 
-    <!-- Real-time Status -->
-    <div class="mt-6 rounded-lg border p-4 bg-gray-50">
-      <h3 class="mb-2 text-lg font-semibold">Real-time Status</h3>
-      <div class="grid gap-2 text-sm md:grid-cols-3">
-        <p><strong>Balance:</strong> {cyphertap.balance} sats</p>
-        <p><strong>Logged In:</strong> {cyphertap.isLoggedIn ? '✅' : '❌'}</p>
-        <p><strong>Ready:</strong> {cyphertap.isReady ? '✅' : '❌'}</p>
-      </div>
-      <div class="mt-2 text-xs text-muted-foreground">
-        <p><strong>NPub:</strong> {cyphertap.npub || 'Not available'}</p>
-      </div>
-    </div>
+			<!-- Ecash -->
+			<div class="rounded-lg border p-6">
+				<h3 class="mb-4 text-xl font-semibold">Ecash</h3>
+				<div class="space-y-3">
+					<div class="flex gap-2">
+						<Button onclick={generateToken} disabled={!inputs.tokenAmount}>Generate Token</Button>
+						<Input type="number" bind:value={inputs.tokenAmount} placeholder="Amount in sats" />
+						{#if results.token}
+							<div class="rounded p-2">
+								<p class="font-mono text-xs break-all">{results.token}</p>
+								<Button onclick={() => copyToClipboard(results.token, 'Token')}>Copy Token</Button>
+							</div>
+						{/if}
+					</div>
+					<div class="flex gap-2">
+						<Button onclick={receiveToken} disabled={!inputs.cashuToken}>Receive Token</Button>
+						<Input type="text" bind:value={inputs.cashuToken} placeholder="cashub123..." />
+						{#if results.token}
+							<div class="rounded p-2">
+								<p class="font-mono text-xs break-all">{results.token}</p>
+								<Button onclick={() => copyToClipboard(results.token, 'Token')}>Copy Token</Button>
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
 
-  {:else}
-    <!-- Login Required -->
-    <div class="rounded-lg border p-8 text-center">
-      <h3 class="mb-4 text-xl font-semibold">
-        {cyphertap.isLoggedIn ? 'Initializing Wallet...' : 'Login Required'}
-      </h3>
-      <p class="text-muted-foreground">
-        {cyphertap.isLoggedIn 
-          ? 'Please wait while we set up your wallet...'
-          : 'Please click the CypherTap button above to login and access the API features.'
-        }
-      </p>
-    </div>
-  {/if}
+			<!-- Nostr -->
+			<div class="rounded-lg border p-6">
+				<h3 class="mb-4 text-xl font-semibold">Nostr</h3>
+				<div class="space-y-3">
+					<div>
+						<input
+							type="text"
+							bind:value={inputs.textNote}
+							class="mb-2 w-full rounded border px-2 py-1"
+							placeholder="Text to publish"
+						/>
+						<Button onclick={publishNote}>Publish Note</Button>
+					</div>
+
+					<Button onclick={signEvent}>Sign Demo Event</Button>
+					{#if results.signedEvent}
+						<div class="rounded p-2">
+							<pre class="text-xs">{results.signedEvent}</pre>
+						</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	{:else}
+		<!-- Login Required -->
+		<div class="rounded-lg border p-8 text-center">
+			<h3 class="mb-4 text-xl font-semibold">
+				{cyphertap.isLoggedIn ? 'Initializing Wallet...' : 'Login Required'}
+			</h3>
+			<p class="text-muted-foreground">
+				{cyphertap.isLoggedIn
+					? 'Please wait while we set up your wallet...'
+					: 'Please click the CypherTap Button above to login and access the API features.'}
+			</p>
+		</div>
+	{/if}
 </div>

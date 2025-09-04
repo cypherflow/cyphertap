@@ -6,6 +6,6 @@
 </script>
 
 <ModeWatcher />
-<div data-vaul-drawer-wrapper>
+<div >
 	{@render children()}
 </div>

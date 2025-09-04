@@ -2,6 +2,10 @@
 import { writable, get } from 'svelte/store';
 import type { NDKCashuWalletTx } from '@nostr-dev-kit/ndk';
 import { isLoggedIn } from './nostr.js';
+import { createDebug } from '$lib/utils/debug.js';
+
+// Create debug logger for navigation 
+const debug = createDebug('navigation');
 
 // Define types for the views
 export type ViewName =
@@ -48,14 +52,14 @@ export const inTransition = writable<boolean>(false);
 
 
 
-export function initUserMenuNavigation() {
-  console.log("setting inTransition: false")
+export function initNavigation() {
+  const d = debug.extend('initNavigation')
   //inTransition.set(false)
   if (get(isLoggedIn)) {
-    console.log("[INIT USER MENU] USER IS LOGGED IN, GOING TO MAIN")
+    d.log("User is logged in, current view set to main")
     currentView.set('main')
   } else {
-    console.log("[INIT USER MENU] USER IS NOT LOGGED IN, GOING TO LOGIN")
+    d.log("User is not logged in, current view set to login")
     currentView.set('login')
   }
   //inTransition.set(false)
@@ -68,6 +72,7 @@ export function navigateTo(
   view: ViewName | 'reset',
   navigationContext?: Partial<NavigationContext>
 ) {
+  const d = debug.extend('navigateTo')
   const current = get(currentView);
 
   // Handle reset view (go to main if logged in, login otherwise)
@@ -84,7 +89,7 @@ export function navigateTo(
 
   // Set source view as current view
   context.update((ctx) => ({ ...ctx, sourceView: current }));
-  console.log(`setting navigation context to: `, get(context))
+  d.log(`setting navigation context to: `, get(context))
 
   // Update context if provided
   if (navigationContext) {
@@ -92,41 +97,38 @@ export function navigateTo(
   }
 
   // Update current view
-  console.log(`[navigateTo] setting current view to: ${view}`)
+  d.log(`Setting current view to: ${view}`)
   currentView.set(view);
 }
 
-export function openMenuAt(view: ViewName) {
-  console.log(`[openMenuAt] setting isTransition: false`)
+export function openMenu(view?: ViewName) {
+  const d = debug.extend('openMenu')
   inTransition.set(false)
 
-  console.log("[openMenuAt] navigate to reset")
+  d.log("reset current view")
   navigateTo('reset');
-  console.log('[openMenuAt] set current view to ', view)
-  currentView.set(view)
-  //console.log("[openMenuAt] opening userMenuOpen")
-  //isUserMenuOpen.set(true)
+  if(view) { 
+    d.log('setting current view to ', view)
+    currentView.set(view);
+  }
 }
 
-export function openMenuAtCurrentView() {
-  console.log(`[openMenuAt] setting isTransition: false`)
-  inTransition.set(false)
+// export function openMenuAtCurrentView() {
+//   inTransition.set(false)
 
-  const current = get(currentView)
+//   const current = get(currentView)
 
-  console.log("[openMenuAt] navigate to reset")
-  navigateTo('reset');
-  console.log('[openMenuAt] set current view to ', current)
-  currentView.set(current)
-  //console.log("[openMenuAt] opening userMenuOpen")
-  //isUserMenuOpen.set(true)
-}
+//   console.log("[openMenuAt] navigate to reset")
+//   navigateTo('reset');
+//   console.log('[openMenuAt] set current view to ', current)
+//   currentView.set(current)
+// }
 
 /**
  * Start a view transition animation
  */
 export function startTransition() {
-  console.log("start transition")
+  // console.log("start transition")
   inTransition.set(true);
 }
 
@@ -134,7 +136,7 @@ export function startTransition() {
  * End a view transition animation
  */
 export function endTransition() {
-  console.log('end transition')
+  // console.log('end transition')
   inTransition.set(false);
 }
 
@@ -148,5 +150,5 @@ export function viewTransactionDetails(transaction: any, sourceView: ViewName = 
     transactionSourceView: sourceView
   }));
 
-  navigateTo('transaction-detail');
+  navigateTo('transaction-details');
 }

@@ -1,9 +1,9 @@
 // src/lib/api/cyphertap-api.svelte.ts
 import { 
-  type NDKEvent, 
   type NDKFilter, 
+  type NDKRawEvent, 
   type NDKSubscription,
-  NDKEvent as NDKEventClass
+  NDKEvent
 } from '@nostr-dev-kit/ndk';
 import { getEncodedTokenV4 } from '@cashu/cashu-ts';
 
@@ -11,14 +11,13 @@ import { getEncodedTokenV4 } from '@cashu/cashu-ts';
 import { 
   ndkInstance, 
   currentUser, 
-  relayConnectionStatus
+  relayConnectionStatus,
+  autoLogin
 } from '$lib/stores/nostr.js';
 import { 
   wallet, 
   walletBalance, 
-  isWalletReady,
-  mintInfo,
-  mainMint
+  isWalletReady
 } from '$lib/stores/wallet.js';
 import { get, derived } from 'svelte/store';
 
@@ -65,6 +64,7 @@ export class CyphertapAPI {
     this._npub.subscribe(value => {
       this.#npub = value;
     });
+    // autoLogin();
   }
 
   // Public reactive getters
@@ -174,7 +174,7 @@ export class CyphertapAPI {
     const ndk = get(ndkInstance);
     if (!ndk) throw new Error('NDK not initialized');
     
-    const event = new NDKEventClass(ndk, {
+    const event = new NDKEvent(ndk, {
       kind: 1,
       content,
     });
@@ -186,12 +186,12 @@ export class CyphertapAPI {
     };
   }
 
-  async publishEvent(eventData: { kind: number; content: string; tags?: string[][] }): Promise<{ id: string; pubkey: string }> {
+  async publishEvent(event: Partial<NDKRawEvent>): Promise<{ id: string; pubkey: string }> {
     const ndk = get(ndkInstance);
     if (!ndk) throw new Error('NDK not initialized');
     
-    const event = new NDKEventClass(ndk, eventData);
-    await event.publish();
+    const ndkEvent = new NDKEvent(ndk, event);
+    await ndkEvent.publish();
     
     return {
       id: event.id || '',
@@ -217,12 +217,12 @@ export class CyphertapAPI {
     return () => subscription.stop();
   }
 
-  async signEvent(eventData: { kind: number; content: string; tags?: string[][] }): Promise<{ id: string; pubkey: string; signature: string }> {
+  async signEvent(event: Partial<NDKRawEvent>): Promise<{ id: string; pubkey: string; signature: string }> {
     const ndk = get(ndkInstance);
     if (!ndk) throw new Error('NDK not initialized');
     
-    const event = new NDKEventClass(ndk, eventData);
-    await event.sign();
+    let ndkEvent = new NDKEvent(ndk, event);
+    await ndkEvent.sign();
     
     return {
       id: event.id || '',
@@ -255,19 +255,6 @@ export class CyphertapAPI {
     const status = get(relayConnectionStatus);
     const connected = status.filter(relay => relay.connected).length;
     return { connected, total: status.length };
-  }
-
-  getMints(): string[] {
-    const currentWallet = get(wallet);
-    return currentWallet?.mints || [];
-  }
-
-  getMainMint(): string | null {
-    return get(mainMint);
-  }
-
-  getMintInfo(): Array<{ url: string; balance: number; isMain: boolean; isRegistered: boolean }> {
-    return get(mintInfo);
   }
 }
 
