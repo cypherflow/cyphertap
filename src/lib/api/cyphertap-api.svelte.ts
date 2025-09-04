@@ -64,7 +64,6 @@ export class CyphertapAPI {
     this._npub.subscribe(value => {
       this.#npub = value;
     });
-    // autoLogin();
   }
 
   // Public reactive getters
