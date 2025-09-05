@@ -8,7 +8,7 @@ import {
   autoLogin,
   EXTENSION_LOGIN
 } from '$lib/stores/nostr.js';
-import { initializeWallet } from '$lib/stores/wallet.js';
+import { initWallet } from '$lib/stores/wallet.js';
 import { createDebug } from '$lib/utils/debug.js';
 import { initNavigation } from '../stores/navigation.js';
 import { startUnpublishedEventsMonitor } from './unpublishedEvents.js';
@@ -103,7 +103,7 @@ export async function initializeApp(skipAuth = false): Promise<{
     initNavigation();
 
     // Initialize async components
-    // await initializeWallet();
+    // await initWallet();
 
     // Start monitoring for unpublished events
     // d.log('Starting unpublished events monitor');

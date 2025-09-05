@@ -3,7 +3,7 @@
 	import { mode, setMode } from 'mode-watcher';
 	import { navigateTo } from '$lib/stores/navigation.js'
 
-	import * as Accordion from '$lib/components/ui/accordion/index.js';
+	import { Accordion }  from '$lib/components/ui/accordion/index.js';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
 	import Switch from '$lib/components/ui/switch/switch.svelte';
@@ -52,12 +52,12 @@
 				<Switch checked={mode.current === 'dark'} onCheckedChange={toggleTheme} />
 			</div>
 
-			<Accordion.Root type="multiple" class="">
+			<Accordion type="multiple" class="">
 				<LinkDevices />
 				<MintManagement />
 				<RelayManagement />
 				<NostrKeys />
-			</Accordion.Root>
+			</Accordion>
 
 			<!-- Logout button - now using the SignOutButton component -->
 			<div class="mt-2 w-full pt-4">

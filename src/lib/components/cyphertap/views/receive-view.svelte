@@ -8,7 +8,7 @@
 	import { scanResult } from '$lib/stores/scan-store.js';
 	import { navigateTo } from '$lib/stores/navigation.js';
 
-    import * as Tabs from "$lib/components/ui/tabs/index.js";
+    import { Tabs, TabsList, TabsTrigger, TabsContent } from "$lib/components/ui/tabs/index.js";
 	import { wallet, createDeposit, receiveToken, addMint } from '$lib/stores/wallet.js';
 
     import Copy from '@lucide/svelte/icons/copy';
@@ -296,20 +296,20 @@
 		<h3 class="text-lg font-medium">Receive Sats</h3>
 	</div>
 	<div class="space-y-4">
-		<Tabs.Root value={activeTab} onValueChange={(value) => (activeTab = value)} class="w-full">
-			<Tabs.List class="grid w-full grid-cols-2">
-				<Tabs.Trigger value="lightning" class="flex items-center justify-center">
+		<Tabs value={activeTab} onValueChange={(value) => (activeTab = value)} class="w-full">
+			<TabsList class="grid w-full grid-cols-2">
+				<TabsTrigger value="lightning" class="flex items-center justify-center">
 					<Zap class="mr-1 h-4 w-4" />
 					Lightning
-				</Tabs.Trigger>
-				<Tabs.Trigger value="token" class="flex items-center justify-center">
+				</TabsTrigger>
+				<TabsTrigger value="token" class="flex items-center justify-center">
 					<Banknote class="mr-1 h-4 w-4" />
 					Ecash
-				</Tabs.Trigger>
-			</Tabs.List>
+				</TabsTrigger>
+			</TabsList>
 
 			<div class="mt-4">
-				<Tabs.Content value="lightning" class="space-y-4">
+				<TabsContent value="lightning" class="space-y-4">
 					{#if !isProcessing}
 						<div class="grid gap-2">
 							<Label for="amount">Amount (sats)</Label>
@@ -380,9 +380,9 @@
 							</Button>
 						{/if}
 					</div>
-				</Tabs.Content>
+				</TabsContent>
 
-				<Tabs.Content value="token" class="space-y-4">
+				<TabsContent value="token" class="space-y-4">
 					{#if !isTokenReceived}
 						{#if !decodedToken}
 							<div class="grid gap-2">
@@ -482,9 +482,9 @@
 							{/if}
 						</div>
 					{/if}
-				</Tabs.Content>
+				</TabsContent>
 			</div>
-		</Tabs.Root>
+		</Tabs>
 
 		{#if error}
 			<div class="flex items-center gap-2 rounded border bg-destructive/10 p-3 text-destructive">

@@ -9,7 +9,7 @@
 	} from '$lib/services/init.svelte';
 	import { decryptToSigner } from '$lib/utils/nip49.js';
 	import { onMount } from 'svelte';
-    import * as InputOTP from "$lib/components/ui/input-otp/index.js";
+    import { InputOTP, InputOTPGroup, InputOTPSlot } from "$lib/components/ui/input-otp/index.js";
 	import { REGEXP_ONLY_DIGITS } from 'bits-ui';
 	import ViewContainer from './view-container.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -153,15 +153,15 @@
 			<div class="flex flex-col items-center space-y-2 text-center">
 				<label for="pin" class="text-xs text-foreground">Enter PIN from primary device</label>
 
-				<InputOTP.Root maxlength={4} bind:value={pin} pattern={REGEXP_ONLY_DIGITS}>
+				<InputOTP maxlength={4} bind:value={pin} pattern={REGEXP_ONLY_DIGITS}>
 					{#snippet children({ cells })}
-						<InputOTP.Group>
+						<InputOTPGroup>
 							{#each cells as cell (cell)}
-								<InputOTP.Slot {cell} />
+								<InputOTPSlot {cell} />
 							{/each}
-						</InputOTP.Group>
+						</InputOTPGroup>
 					{/snippet}
-				</InputOTP.Root>
+				</InputOTP>
 			</div>
 
 			<!-- Link Button -->

@@ -1,7 +1,6 @@
 <!-- src/lib/components/settings/MintManagement.svelte -->
 <script lang="ts">
 	import { consolidateTokens } from '$lib/stores/wallet.js';
-	import * as Accordion from '$lib/components/ui/accordion/index.js';
     import { Alert, AlertDescription } from '$lib/components/ui/alert/index.js'
 
     import Banknote from '@lucide/svelte/icons/banknote';
@@ -9,6 +8,7 @@
 	import MintList from './mint-list.svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import { AccordionItem, AccordionContent, AccordionTrigger}  from '$lib/components/ui/accordion/index.js';
 
 	// Simple state for the consolidation process
 	let isConsolidating: boolean = false;
@@ -31,14 +31,14 @@
 	}
 </script>
 
-<Accordion.Item>
-	<Accordion.Trigger>
+<AccordionItem>
+	<AccordionTrigger>
 		<span class="flex w-full gap-2 text-left">
 			<Banknote />
 			Mint Management
 		</span>
-	</Accordion.Trigger>
-	<Accordion.Content>
+	</AccordionTrigger>
+	<AccordionContent>
 		<div class="mt-2 space-y-3">
 			<p class="text-sm text-muted-foreground">
 				Mints are servers that issue ecash tokens. Add trusted mints to send, receive, and manage
@@ -70,5 +70,5 @@
 				</Alert>
 			{/if}
 		</div>
-	</Accordion.Content>
-</Accordion.Item>
+	</AccordionContent>
+</AccordionItem>

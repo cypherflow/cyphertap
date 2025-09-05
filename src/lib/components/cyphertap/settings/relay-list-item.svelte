@@ -1,7 +1,7 @@
 <!-- src/lib/components/settings/RelayListItem.svelte -->
 <script lang="ts">
 	import { removeRelay } from '$lib/stores/nostr.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator }  from '$lib/components/ui/dropdown-menu/index.js';
 	import { copyToClipboard } from '$lib/utils/clipboard.js';
     import Ellipsis from '@lucide/svelte/icons/ellipsis';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -53,24 +53,24 @@
 		<span class="max-w-[180px] truncate text-xs font-medium">{relay.url}</span>
 	</div>
 
-	<DropdownMenu.Root>
-		<DropdownMenu.Trigger>
+	<DropdownMenu>
+		<DropdownMenuTrigger>
 			{#snippet child({ props })}
 				<Button {...props} variant="ghost" size="icon" class="relative size-8 p-0">
 					<span class="sr-only">Open menu</span>
 					<Ellipsis />
 				</Button>
 			{/snippet}
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content>
-			<DropdownMenu.Group>
+		</DropdownMenuTrigger>
+		<DropdownMenuContent>
+			<DropdownMenuGroup>
 				<!-- Placeholder actions - uncomment or modify as needed -->
-				<DropdownMenu.Item onclick={handleCopyURL}>Copy URL</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={handlePrimaryRelay} disabled>Set as primary</DropdownMenu.Item>
+				<DropdownMenuItem onclick={handleCopyURL}>Copy URL</DropdownMenuItem>
+				<DropdownMenuItem onclick={handlePrimaryRelay} disabled>Set as primary</DropdownMenuItem>
 				<!-- Additional actions can be added here -->
-			</DropdownMenu.Group>
-			<DropdownMenu.Separator />
-			<DropdownMenu.Item class="text-destructive" onclick={handleRemove}>Remove</DropdownMenu.Item>
-		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+			</DropdownMenuGroup>
+			<DropdownMenuSeparator />
+			<DropdownMenuItem class="text-destructive" onclick={handleRemove}>Remove</DropdownMenuItem>
+		</DropdownMenuContent>
+	</DropdownMenu>
 </div>

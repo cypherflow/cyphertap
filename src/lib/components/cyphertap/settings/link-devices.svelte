@@ -8,7 +8,7 @@
 	import { createLinkPayload, generateRandomPin } from '$lib/utils/pin.js';
 
 	import { Alert, AlertDescription } from '$lib/components/ui/alert/index.js';
-	import * as Accordion from '$lib/components/ui/accordion/index.js';
+	import { AccordionItem, AccordionContent, AccordionTrigger}  from '$lib/components/ui/accordion/index.js';
     import MonitorSmartphone from '@lucide/svelte/icons/monitor-smartphone';
 
 	// State variables
@@ -55,15 +55,15 @@
 	});
 </script>
 
-<Accordion.Item>
-	<Accordion.Trigger>
+<AccordionItem>
+	<AccordionTrigger>
 		<span class="flex w-full gap-2 text-left">
 			<MonitorSmartphone />
 			Link New Device
 		</span>
-	</Accordion.Trigger>
+	</AccordionTrigger>
 
-	<Accordion.Content>
+	<AccordionContent>
 		<div class=" space-y-4 px-1">
 			<!-- Instructions -->
 			<div class="text-sm text-muted-foreground">
@@ -107,5 +107,5 @@
 				</div>
 			{/if}
 		</div>
-	</Accordion.Content>
-</Accordion.Item>
+	</AccordionContent>
+</AccordionItem>

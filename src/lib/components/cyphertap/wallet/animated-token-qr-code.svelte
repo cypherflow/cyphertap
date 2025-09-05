@@ -2,8 +2,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import QRCode from '@castlenine/svelte-qrcode';
 
-	import * as Accordion from '$lib/components/ui/accordion/index.js';
-	import * as Button from '$lib/components/ui/button/index.js';
+	import {Accordion, AccordionItem, AccordionContent, AccordionTrigger}  from '$lib/components/ui/accordion/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
     import LoaderCircle from '@lucide/svelte/icons/loader-circle';
     import Grid2X2 from '@lucide/svelte/icons/grid-2x2';
     import Grid3X3 from '@lucide/svelte/icons/grid-3x3';
@@ -155,13 +155,13 @@
 		</div>
 
 		{#if isAnimating}
-			<Accordion.Root type="single" class="w-full max-w-md">
-				<Accordion.Item value="qr-settings">
-					<Accordion.Trigger class="flex items-center gap-2">
+			<Accordion type="single" class="w-full max-w-md">
+				<AccordionItem value="qr-settings">
+					<AccordionTrigger class="flex items-center gap-2">
 						<CircleAlert class="h-4 w-4" />
 						<span>Problems scanning QR?</span>
-					</Accordion.Trigger>
-					<Accordion.Content>
+					</AccordionTrigger>
+					<AccordionContent>
 						<div class="space-y-6 pt-2">
 							<!-- Animation Speed Controls -->
 							<div class="space-y-2">
@@ -172,25 +172,25 @@
 								<div class="grid grid-cols-2 gap-2">
 									<!-- Wrap each button in a key block to ensure reactive updates -->
 									{#key animationSpeed}
-										<Button.Root
+										<Button
 											variant={animationSpeed === 'slow' ? 'default' : 'outline'}
 											size="sm"
 											onclick={() => changeSpeed('slow')}
 										>
 											<Snail class="mr-2 h-4 w-4" />
 											Slow
-										</Button.Root>
+										</Button>
 									{/key}
 
 									{#key animationSpeed}
-										<Button.Root
+										<Button
 											variant={animationSpeed === 'fast' ? 'default' : 'outline'}
 											size="sm"
 											onclick={() => changeSpeed('fast')}
 										>
 											<Rabbit class="mr-2 h-4 w-4" />
 											Fast
-										</Button.Root>
+										</Button>
 									{/key}
 								</div>
 							</div>
@@ -204,32 +204,32 @@
 								<div class="grid grid-cols-2 gap-2">
 									<!-- Wrap each button in a key block to ensure reactive updates -->
 									{#key qrDensity}
-										<Button.Root
+										<Button
 											variant={qrDensity === 'simple' ? 'default' : 'outline'}
 											size="sm"
 											onclick={() => changeDensity('simple')}
 										>
 											<Grid2X2 class="mr-2 h-4 w-4" />
 											Simple
-										</Button.Root>
+										</Button>
 									{/key}
 
 									{#key qrDensity}
-										<Button.Root
+										<Button
 											variant={qrDensity === 'detailed' ? 'default' : 'outline'}
 											size="sm"
 											onclick={() => changeDensity('detailed')}
 										>
 											<Grid3X3 class="mr-2 h-4 w-4" />
 											Detailed
-										</Button.Root>
+										</Button>
 									{/key}
 								</div>
 							</div>
 						</div>
-					</Accordion.Content>
-				</Accordion.Item>
-			</Accordion.Root>
+					</AccordionContent>
+				</AccordionItem>
+			</Accordion>
 		{/if}
 	</div>
 {/if}

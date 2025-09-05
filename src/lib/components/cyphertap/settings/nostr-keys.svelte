@@ -3,7 +3,7 @@
 	import { currentUser, ndkInstance } from '$lib/stores/nostr.js';
 	import { copyToClipboard } from '$lib/utils/clipboard.js';
     import { Alert, AlertDescription } from '$lib/components/ui/alert/index.js'
-	import * as Accordion from '$lib/components/ui/accordion/index.js';
+	import { AccordionItem, AccordionContent, AccordionTrigger}  from '$lib/components/ui/accordion/index.js';
     import Copy from '@lucide/svelte/icons/copy';
     import Eye from '@lucide/svelte/icons/eye';
     import EyeOff from '@lucide/svelte/icons/eye-off';
@@ -29,15 +29,15 @@
 	}
 </script>
 
-<Accordion.Item>
+<AccordionItem>
 	<!-- Nostr Keys Section (now collapsible) -->
-	<Accordion.Trigger>
+	<AccordionTrigger>
 		<span class="flex w-full gap-2 text-left">
 			<Key />
 			Nostr Keys
 		</span>
-	</Accordion.Trigger>
-	<Accordion.Content>
+	</AccordionTrigger>
+	<AccordionContent>
 		<div class="mt-4 space-y-3 px-1">
 			<!-- Public Key Display -->
 			<div>
@@ -106,5 +106,5 @@
 				</div>
 			{/if}
 		</div>
-	</Accordion.Content>
-</Accordion.Item>
+	</AccordionContent>
+</AccordionItem>

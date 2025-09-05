@@ -6,11 +6,11 @@
 		openMenu,
 	} from '$lib/stores/navigation.js';
 	import { MediaQuery } from 'svelte/reactivity';
-	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { Popover, PopoverTrigger, PopoverContent }  from '$lib/components/ui/popover/index.js';
 	import ViewRouter from './views/view-router.svelte';
 	import CyphertapTrigger from './cyphertap-trigger.svelte';
 
-	import * as Drawer from '$lib/components/ui/drawer/index.js';
+	import { Drawer, DrawerTrigger, DrawerContent }  from '$lib/components/ui/drawer/index.js';
 	import { onMount } from 'svelte';
 	import { autoLogin } from '$lib/stores/nostr.js';
 
@@ -29,22 +29,22 @@
 
 {#if isDesktop}
 	<div class="relative">
-		<Popover.Root bind:open={$isUserMenuOpen}>
-			<Popover.Trigger>
+		<Popover bind:open={$isUserMenuOpen}>
+			<PopoverTrigger>
 				<CyphertapTrigger />
-			</Popover.Trigger>
-			<Popover.Content align="end" class="w-80 overflow-hidden p-0">
+			</PopoverTrigger>
+			<PopoverContent align="end" class="w-80 overflow-hidden p-0">
 				<ViewRouter {isDesktop} />
-			</Popover.Content>
-		</Popover.Root>
+			</PopoverContent>
+		</Popover>
 	</div>
 {:else}
-	<Drawer.Root bind:open={$isUserMenuOpen} shouldScaleBackground>
-		<Drawer.Trigger>
+	<Drawer bind:open={$isUserMenuOpen} shouldScaleBackground>
+		<DrawerTrigger>
 			<CyphertapTrigger />
-		</Drawer.Trigger>
-		<Drawer.Content class="pt-0">
+		</DrawerTrigger>
+		<DrawerContent class="pt-0">
 			<ViewRouter {isDesktop} />
-		</Drawer.Content>
-	</Drawer.Root>
+		</DrawerContent>
+	</Drawer>
 {/if}

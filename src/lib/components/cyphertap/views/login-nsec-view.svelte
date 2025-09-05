@@ -9,7 +9,7 @@
 	import CircleAlert from '@lucide/svelte/icons/circle-alert'
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left'
 	import Input from '$lib/components/ui/input/input.svelte';
-    import * as Alert from "$lib/components/ui/alert/index.js";
+    import { Alert, AlertTitle, AlertDescription } from "$lib/components/ui/alert/index.js";
 
 
 	let privateKey = '';
@@ -54,10 +54,10 @@
 	<!-- Security Warning -->
 	{#if !securityWarningAccepted}
 		<div transition:slide>
-			<Alert.Root variant="warning" class="mb-4">
+			<Alert variant="warning" class="mb-4">
 				<CircleAlert class="h-4 w-4" />
-				<Alert.Title>Security Warning</Alert.Title>
-				<Alert.Description class="mt-2 space-y-3">
+				<AlertTitle>Security Warning</AlertTitle>
+				<AlertDescription class="mt-2 space-y-3">
 					<p class="text-sm">
 						Private keys are stored unencrypted in browser storage. We recommend
 						<strong>creating a new account</strong> or
@@ -69,8 +69,8 @@
 					<Button size="sm" onclick={() => (securityWarningAccepted = true)} class="mt-2">
 						I Understand the Risks
 					</Button>
-				</Alert.Description>
-			</Alert.Root>
+				</AlertDescription>
+			</Alert>
 		</div>
 	{/if}
 

@@ -3,8 +3,8 @@
 	import { navigateTo } from '$lib/stores/navigation.js';
 	import { logout } from '$lib/services/logout.js';
 
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import * as Alert from '$lib/components/ui/alert/index.js';
+	import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '$lib/components/ui/dialog/index.js';
+	import { Alert, AlertTitle, AlertDescription } from '$lib/components/ui/alert/index.js';
 
     import LogOut from '@lucide/svelte/icons/log-out';
     import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
@@ -29,33 +29,33 @@
 	}
 </script>
 
-<Dialog.Root>
-	<Dialog.Trigger>
+<Dialog>
+	<DialogTrigger>
 		<Button {variant} {size} class={className}>
 			<LogOut class="mr-2 h-4 w-4" />
 			Sign Out
 		</Button>
-	</Dialog.Trigger>
+	</DialogTrigger>
 
-	<Dialog.Content class="sm:max-w-[425px]">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center">
+	<DialogContent class="sm:max-w-[425px]">
+		<DialogHeader>
+			<DialogTitle class="flex items-center">
 				<LogOut class="mr-2 h-5 w-5 text-destructive" />
 				Sign Out
-			</Dialog.Title>
-			<Dialog.Description>You're about to sign out of CypherFlow.</Dialog.Description>
-		</Dialog.Header>
+			</DialogTitle>
+			<DialogDescription>You're about to sign out of CypherFlow.</DialogDescription>
+		</DialogHeader>
 
 		<div class="grid gap-4 py-4">
 			<!-- Using the Alert component instead of a custom div -->
-			<Alert.Root variant="warning">
+			<Alert variant="warning">
 				<TriangleAlert class="h-4 w-4" />
-				<Alert.Title>Remember your keys</Alert.Title>
-				<Alert.Description>
+				<AlertTitle>Remember your keys</AlertTitle>
+				<AlertDescription>
 					When you sign out, you'll need your private key or a Nostr extension to sign back in. Make
 					sure you have saved your private key in a secure location.
-				</Alert.Description>
-			</Alert.Root>
+				</AlertDescription>
+			</Alert>
 
 			<div class="border-t pt-4">
 				<div class="flex items-start space-x-2">
@@ -77,11 +77,11 @@
 			</div>
 		</div>
 
-		<Dialog.Footer>
-			<Dialog.Close>
+		<DialogFooter>
+			<DialogClose>
 				<Button variant="outline">Cancel</Button>
-			</Dialog.Close>
+			</DialogClose>
 			<Button variant="destructive" onclick={handleConfirmLogout}>Sign Out</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
+		</DialogFooter>
+	</DialogContent>
+</Dialog>

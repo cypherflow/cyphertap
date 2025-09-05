@@ -1,13 +1,28 @@
 <!-- src/lib/components/cyphertap/settings/mint-list-item.svelte -->
 <script lang="ts">
 	import { removeMint, setAsMainMint, addMint } from '$lib/stores/wallet.js';
-    import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import {
+		Dialog,
+		DialogContent,
+		DialogHeader,
+		DialogTitle,
+		DialogDescription,
+		DialogFooter
+	} from '$lib/components/ui/dialog/index.js';
+	import {
+		DropdownMenu,
+		DropdownMenuTrigger,
+		DropdownMenuContent,
+		DropdownMenuGroup,
+		DropdownMenuSeparator,
+		DropdownMenuLabel
+	} from '$lib/components/ui/dropdown-menu/index.js';
 
-    import Ellipsis from '@lucide/svelte/icons/ellipsis';
-    import TriangleAlert from '@lucide/svelte/icons/triangle-alert'
+	import Ellipsis from '@lucide/svelte/icons/ellipsis';
+	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import DropdownMenuItem from '$lib/components/ui/dropdown-menu/dropdown-menu-item.svelte';
 
 	export let mint: {
 		url: string;
@@ -97,8 +112,8 @@
 	{#if mint.isMain}
 		<Badge>Main</Badge>
 	{:else}
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
+		<DropdownMenu>
+			<DropdownMenuTrigger>
 				{#snippet child({ props })}
 					<Button
 						{...props}
@@ -111,57 +126,57 @@
 						<Ellipsis />
 					</Button>
 				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>
 				<!-- Only show Set as main for registered mints -->
 				{#if mint.isRegistered}
-					<DropdownMenu.Group>
-						<DropdownMenu.Item onclick={handleSetAsMain}>Set as main</DropdownMenu.Item>
-						<DropdownMenu.Item disabled>Transfer balance to main</DropdownMenu.Item>
-					</DropdownMenu.Group>
-					<DropdownMenu.Separator />
+					<DropdownMenuGroup>
+						<DropdownMenuItem onclick={handleSetAsMain}>Set as main</DropdownMenuItem>
+						<DropdownMenuItem disabled>Transfer balance to main</DropdownMenuItem>
+					</DropdownMenuGroup>
+					<DropdownMenuSeparator />
 				{/if}
 
 				<!-- Show Trust action for unregistered mints -->
 				{#if !mint.isRegistered}
-					<DropdownMenu.Label class="max-w-48 whitespace-normal px-2 py-1.5 text-xs">
+					<DropdownMenuLabel class="max-w-48 px-2 py-1.5 text-xs whitespace-normal">
 						Your wallet has tokens from a mint outside of your registered mints
-					</DropdownMenu.Label>
-					<DropdownMenu.Separator />
-					<DropdownMenu.Item onclick={handleTrustMint} class="text-amber-600">
+					</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem onclick={handleTrustMint} class="text-amber-600">
 						Trust mint
-					</DropdownMenu.Item>
-					<DropdownMenu.Item disabled>Transfer balance to main</DropdownMenu.Item>
+					</DropdownMenuItem>
+					<DropdownMenuItem disabled>Transfer balance to main</DropdownMenuItem>
 				{/if}
 
 				<!-- Remove option (only available for registered mints) -->
 				{#if mint.isRegistered}
-					<DropdownMenu.Item class="text-destructive" onclick={handleRemove}>
+					<DropdownMenuItem class="text-destructive" onclick={handleRemove}>
 						Remove
-					</DropdownMenu.Item>
+					</DropdownMenuItem>
 				{/if}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	{/if}
 </div>
 
 <!-- Confirmation Dialog for removing a mint with balance -->
-<Dialog.Root bind:open={showConfirmDialog}>
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>Remove Mint with Balance</Dialog.Title>
-			<Dialog.Description>
+<Dialog bind:open={showConfirmDialog}>
+	<DialogContent>
+		<DialogHeader>
+			<DialogTitle>Remove Mint with Balance</DialogTitle>
+			<DialogDescription>
 				This mint has a balance of {mint.balance} sats. Removing it will make those funds inaccessible
 				from this wallet. Are you sure you want to continue?
-			</Dialog.Description>
-		</Dialog.Header>
-		<Dialog.Footer>
+			</DialogDescription>
+		</DialogHeader>
+		<DialogFooter>
 			<Button variant="outline" onclick={() => (showConfirmDialog = false)} disabled={isProcessing}
 				>Cancel</Button
 			>
 			<Button variant="destructive" onclick={confirmRemove} disabled={isProcessing}>
 				{isProcessing ? 'Removing...' : 'Remove Anyway'}
 			</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
+		</DialogFooter>
+	</DialogContent>
+</Dialog>

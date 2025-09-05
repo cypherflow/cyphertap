@@ -1,17 +1,17 @@
 <script lang="ts">
     import Router from '@lucide/svelte/icons/router';
-	import * as Accordion from '$lib/components/ui/accordion/index.js';
+	import { AccordionItem, AccordionContent, AccordionTrigger}  from '$lib/components/ui/accordion/index.js';
 	import RelayList from './relay-list.svelte';
 </script>
 
-<Accordion.Item>
-	<Accordion.Trigger>
+<AccordionItem>
+	<AccordionTrigger>
 		<span class="flex w-full gap-2 text-left">
 			<Router />
 			Relay Management
 		</span>
-	</Accordion.Trigger>
-	<Accordion.Content>
+	</AccordionTrigger>
+	<AccordionContent>
 		<div class="mt-4 space-y-3">
 			<p class="text-sm text-muted-foreground">
 				Relays store your encrypted conversations and wallet data. Adding multiple reliable relays
@@ -19,5 +19,5 @@
 			</p>
 			<RelayList />
 		</div>
-	</Accordion.Content>
-</Accordion.Item>
+	</AccordionContent>
+</AccordionItem>

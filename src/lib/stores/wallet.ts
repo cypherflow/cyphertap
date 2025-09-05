@@ -24,6 +24,7 @@ import { createDebug } from '$lib/utils/debug.js';
 
 // Create a debug logger for the wallet module
 const d = createDebug('wallet');
+const debug = createDebug('wallet')
 // Create specific loggers for sub-components
 const dTx = d.extend('tx');
 const dMint = d.extend('mint');
@@ -44,36 +45,44 @@ export const REQUIRED_DEPOSIT_AMOUNT = 1; // in sats
 let knownTransactionIds = new Set<string>();
 let txSubscription: NDKSubscription | null = null;
 // Initialize wallet for the current user
-export async function initializeWallet() {
-  // Get the latest NDK instance from the store
-  const ndk = get(ndkInstance);
-  if (!ndk) {
-    d.error('NDK instance not available');
-    throw new Error('NDK instance not available');
-  }
-  d.log('Starting wallet initialization');
+export async function initWallet(isNewUser: boolean = false) {
+  const d = debug.extend('initWallet')
+  const dEvent = debug.extend('event');
+  let ndk = getNDK();
+
+  d.log('Starting NIP-60 wallet...');
   isInitializingWallet.set(true);
   let userWallet: NDKCashuWallet | undefined;
+  const poolRelaySet = new NDKRelaySet(
+    new Set(ndk.pool.relays.values()), 
+    ndk
+  )
+  // const explicitRelaySet = NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls, ndk)
   try {
-    userWallet = await findExistingWallet();
-    if (!userWallet) {
-      // No wallet found
-      d.log('No existing wallet found, creating new wallet');
-      userWallet = await setupCashuWallet(DEFAULT_MINTS);
+    if (isNewUser){
+      // For new quick start users, set up wallet with default mints
+      userWallet = await setupCashuWallet(DEFAULT_MINTS, poolRelaySet);
     } else {
-      d.log('Found existing wallet');
+      // For everyone else, check if they already have a nip-60 wallet
+      userWallet = await findExistingWallet(poolRelaySet);
+      if (userWallet){
+        d.log("Found existing NIP-60 wallet")
+      } else {
+        userWallet = await setupCashuWallet(DEFAULT_MINTS, poolRelaySet);
+      }
     }
+
     wallet.set(userWallet);
     // Update balance store when wallet reports balance changes
     userWallet.on('balance_updated', () => {
       const balance = userWallet?.balance;
-      d.log('Balance updated:', balance);
+      dEvent.log('Balance updated:', balance);
       walletBalance.set(balance?.amount || 0);
     });
 
     // Listen for wallet warnings
     userWallet.on('warning', (warning) => {
-      d.warn('Client wallet warning:', warning.msg);
+      dEvent.warn('Client wallet warning:', warning.msg);
     });
 
     // Setup mint-related event handlers
@@ -143,13 +152,6 @@ export async function initializeWallet() {
       // Start listening for new transactions
       d.log('Setting up transaction subscription...');
       setupTransactionSubscription();
-      // // Clean up old sent tokens (tokens older than 30 days)
-      // d.log('Cleaning up old tokens...');
-      // cleanupOldTokens().catch((error) => {
-      //   d.error('Error cleaning up old tokens:', error);
-      // });
-      //// initialize mint and relay management
-      //await mintManagement.initialize();
     });
 
     // Start monitoring the wallet
@@ -167,7 +169,8 @@ export async function initializeWallet() {
   }
 }
 
-async function findExistingWallet(): Promise<NDKCashuWallet | undefined> {
+async function findExistingWallet(relaySet?: NDKRelaySet): Promise<NDKCashuWallet | undefined> {
+  const d = debug.extend('findExistingWallet')
   d.log('Looking for existing wallet...');
   const ndk = getNDK();
   const activeUser = ndk.activeUser;
@@ -176,14 +179,15 @@ async function findExistingWallet(): Promise<NDKCashuWallet | undefined> {
     d.error('No active user found, cannot find wallet');
     throw 'we need a user first, set a signer in ndk';
   }
-  //
-  //// First check the cache directly
 
-  // Second check relays directly
+  // check relays directly
+  d.log("using ndk pool set: ", relaySet)
+
   d.log(`Fetching wallet events for user ${activeUser.pubkey.slice(0, 8)}...`);
   let event = await ndk.fetchEvent(
     { kinds: [NDKKind.CashuWallet], authors: [activeUser.pubkey] },
-    { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY, subId: 'wallet-sub' }
+    { cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY, subId: 'wallet-sub' },
+    relaySet
   );
 
   if (event) {
@@ -195,7 +199,8 @@ async function findExistingWallet(): Promise<NDKCashuWallet | undefined> {
   return undefined;
 }
 
-async function setupCashuWallet(mints: string[], relays?: NDKRelaySet) {
+async function setupCashuWallet(mints: string[], relaySet: NDKRelaySet) {
+  const d = debug.extend('setupCashuWallet');
   d.log(`Setting up new Cashu wallet with mints: ${mints.join(', ')}`);
   const ndk = getNDK();
   // Create the Cashu wallet instance
@@ -203,7 +208,8 @@ async function setupCashuWallet(mints: string[], relays?: NDKRelaySet) {
 
   // Add mints to the wallet
   wallet.mints = mints;
-  wallet.relaySet = relays || NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls, ndk);
+  d.log("Using relaySet: ", relaySet);
+  wallet.relaySet = relaySet;
 
   // Generate or load a p2pk (Pay-to-Public-Key) token
   // This is used for receiving payments with NIP-61 (nutzaps)

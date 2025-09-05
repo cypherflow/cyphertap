@@ -14,7 +14,7 @@ import { BROWSER as browser } from 'esm-env'
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import { startUnpublishedEventsMonitor, stopUnpublishedEventsMonitor } from '$lib/services/unpublishedEvents.js';
 import { createDebug } from '$lib/utils/debug.js';
-import { initializeWallet } from './wallet.js';
+import { initWallet } from './wallet.js';
 import { navigateTo } from './navigation.js';
 
 // Create debug logger for Nostr functionality
@@ -284,7 +284,7 @@ export async function login(options: {
     // Start unpublished events monitor
     startUnpublishedEventsMonitor();
 
-    await initializeWallet();
+    await initWallet();
 
 
     return;
