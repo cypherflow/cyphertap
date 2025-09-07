@@ -9,6 +9,7 @@ const debug = createDebug('navigation');
 
 // Define types for the views
 export type ViewName =
+  | 'onboarding'
   | 'login'
   | 'login-private-key'
   | 'login-link-device'  
@@ -24,6 +25,7 @@ export type ViewName =
 
 // View hierarchy for animation direction
 const viewHierarchy: Record<ViewName, number> = {
+  'onboarding': -1,
   'login': 0,
   'login-private-key': 1,
   'login-link-device': 1,
@@ -60,7 +62,7 @@ export function initNavigation() {
     currentView.set('main')
   } else {
     d.log("User is not logged in, current view set to login")
-    currentView.set('login')
+    currentView.set('onboarding')
   }
   //inTransition.set(false)
 }
@@ -78,7 +80,7 @@ export function navigateTo(
   // Handle reset view (go to main if logged in, login otherwise)
   if (view === 'reset') {
     const loggedIn = get(isLoggedIn);
-    view = loggedIn ? 'main' : 'login';
+    view = loggedIn ? 'main' : 'onboarding';
   }
 
   // Don't navigate if it's the same view

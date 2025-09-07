@@ -1,6 +1,6 @@
 <!-- src/lib/components/cyphertap/views/view-router.svelte -->
 <script lang="ts">
-	import { currentView, inTransition } from '$lib/stores/navigation.js';
+	import { currentView, initNavigation, inTransition } from '$lib/stores/navigation.js';
 	import { MediaQuery } from 'svelte/reactivity';
 	import LoginGenerateKeyView from './login-generate-key-view.svelte';
 	import LoginLinkDeviceView from './login-link-device-view.svelte';
@@ -14,12 +14,17 @@
 	import SettingsView from './settings-view.svelte';
 	import TransactionDetailsView from './transaction-details-view.svelte';
 	import TransactionHistoryView from './transaction-history-view.svelte';
+	import OnboardingView from './onboarding-view.svelte';
 	
 	export let isDesktop = new MediaQuery('(min-width: 768px)').current;
 	export let fullScreen = false;
 
+
+	initNavigation();
+
 	// Component mapping
 	const viewComponents = {
+		'onboarding': OnboardingView,
 		'login': LoginView,
 		'login-private-key': LoginNsecView,
 		'login-link-device': LoginLinkDeviceView,

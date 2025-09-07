@@ -1,10 +1,9 @@
 @import "tailwindcss";
-
 @import "tw-animate-css";
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Your existing variables */
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -37,6 +36,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Additional color variables from your v3 config */
+  --color-1: 0 100% 50%;
+  --color-2: 120 100% 50%;
+  --color-3: 240 100% 50%;
+  --color-4: 60 100% 50%;
+  --color-5: 300 100% 50%;
 }
 
 .dark {
@@ -78,6 +84,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Color mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -109,6 +117,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Additional colors from v3 config */
+  --color-color-1: hsl(var(--color-1));
+  --color-color-2: hsl(var(--color-2));
+  --color-color-3: hsl(var(--color-3));
+  --color-color-4: hsl(var(--color-4));
+  --color-color-5: hsl(var(--color-5));
 }
 
 @layer base {
@@ -117,5 +132,406 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* All animations from your v3 config */
+  .animate-flip {
+    animation: flip 6s infinite steps(2, end);
+  }
+  .animate-kitrotate {
+    animation: kitrotate 3s linear infinite both;
+  }
+  .animate-shine {
+    animation: shine 2s linear infinite;
+  }
+  .animate-slide {
+    animation: slide 40s linear infinite;
+  }
+  .animate-spotlight {
+    animation: spotlight 2s ease .75s 1 forwards;
+  }
+  .animate-border-width {
+    animation: border-width 3s infinite alternate;
+  }
+  .animate-text-gradient {
+    animation: text-gradient 2s linear infinite;
+  }
+  .animate-text-shake {
+    animation: text-shake 1s ease 1;
+  }
+  .animate-text-glitch-to {
+    animation: text-glitch-to 0.6s ease-in-out infinite;
+  }
+  .animate-text-glitch-from {
+    animation: text-glitch-from 0.6s ease-in-out infinite;
+  }
+  .animate-text-scale {
+    animation: text-scale 1s linear infinite forwards;
+  }
+  .animate-spinner {
+    animation: spinner 1.2s linear infinite;
+  }
+  .animate-brightness {
+    animation: brightness 2.2s linear infinite;
+  }
+  .animate-background-shine {
+    animation: background-shine 2s linear infinite;
+  }
+  .animate-pulse-slow {
+    animation: pulse 6s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  .animate-ripple {
+    animation: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+  }
+  .animate-spin-around {
+    animation: spin-around calc(var(--speed) * 2) infinite linear;
+  }
+  .animate-magicslide {
+    animation: magicslide var(--speed) ease-in-out infinite alternate;
+  }
+  .animate-shimmer {
+    animation: shimmer 8s infinite;
+  }
+  .animate-gradient {
+    animation: gradient 8s linear infinite;
+  }
+  .animate-orbit {
+    animation: orbit calc(var(--duration)*1s) linear infinite;
+  }
+  .animate-marquee {
+    animation: marquee var(--duration) linear infinite;
+  }
+  .animate-marquee-vertical {
+    animation: marquee-vertical var(--duration) linear infinite;
+  }
+  .animate-grid {
+    animation: grid 15s linear infinite;
+  }
+  .animate-meteor {
+    animation: meteor 5s linear infinite;
+  }
+  .animate-border-beam {
+    animation: border-beam calc(var(--duration)*1s) infinite linear;
+  }
+  .animate-rippling {
+    animation: rippling 0.6s ease-out;
+  }
+  .animate-rainbow {
+    animation: rainbow var(--speed, 2s) infinite linear;
+  }
+  .animate-line-shadow {
+    animation: line-shadow 15s linear infinite;
+  }
+  .animate-moveUp {
+    animation: moveUp 1.4s ease forwards;
+  }
+  .animate-appear {
+    animation: appear 1s 1s forwards;
+  }
+  .animate-skew-scroll {
+    animation: skew-scroll 20s linear infinite;
+  }
+  .animate-move {
+    animation: move 5s linear infinite;
+  }
+  .animate-smoothTranslate {
+    animation: smoothTranslate var(--animation-duration) var(--animation-delay) infinite;
+  }
+  .animate-ty {
+    animation: ty 1s var(--animation-delay);
+  }
+  .animate-aurora {
+    animation: aurora 60s linear infinite;
+  }
+
+  /* Background utilities */
+  .bg-grid-white\/25 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.25)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  }
+  .bg-grid-black\/2 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.02)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  }
+  .bg-dot-white\/25 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='16' height='16' fill='none'%3e%3ccircle fill='rgb(255 255 255 / 0.25)' id='pattern-circle' cx='10' cy='10' r='1.6257413380501518'%3e%3c/circle%3e%3c/svg%3e");
+  }
+  .bg-dot-black\/15 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='16' height='16' fill='none'%3e%3ccircle fill='rgb(0 0 0 / 0.15)' id='pattern-circle' cx='10' cy='10' r='1.6257413380501518'%3e%3c/circle%3e%3c/svg%3e");
+  }
+}
+
+/* All keyframes from your v3 config */
+@keyframes flip {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes kitrotate {
+  to {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes shine {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes spinner {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes border-width {
+  from {
+    width: 10px;
+    opacity: 0;
+  }
+  to {
+    width: 100px;
+    opacity: 1;
+  }
+}
+
+@keyframes text-gradient {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes text-shake {
+  15% { transform: translateX(5px); }
+  30% { transform: translateX(-5px); }
+  50% { transform: translateX(3px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes text-glitch-to {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes text-glitch-from {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-scale {
+  0% {
+    transform: scaleX(0);
+    transform-origin: bottom left;
+  }
+  25% {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+  75% {
+    transform: scaleX(1);
+    transform-origin: bottom right;
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: bottom right;
+  }
+}
+
+@keyframes slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%,-40%) scale(1);
+  }
+}
+
+@keyframes brightness {
+  0% {
+    transform: skew(-13deg) translateX(-100%);
+  }
+  100% {
+    transform: skew(-13deg) translateX(100%);
+  }
+}
+
+@keyframes background-shine {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+@keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+@keyframes magicslide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@keyframes shimmer {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shimmer-width)) 0;
+  }
+  30%, 60% {
+    background-position: calc(100% + var(--shimmer-width)) 0;
+  }
+}
+
+@keyframes gradient {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg);
+  }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap))); }
+}
+
+@keyframes grid {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes meteor {
+  0% { transform: rotate(215deg) translateX(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% {
+    transform: rotate(215deg) translateX(-500px);
+    opacity: 1;
+  }
+}
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes moveUp {
+  0% { transform: translateY(5%); opacity: 0; }
+  100% { transform: translateY(0%); opacity: 1; }
+}
+
+@keyframes appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--pulse-color); }
+  50% { box-shadow: 0 0 0 8px var(--pulse-color); }
+}
+
+@keyframes rippling {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes rainbow {
+  0% { background-position: 0%; }
+  100% { background-position: 200%; }
+}
+
+@keyframes line-shadow {
+  0% { background-position: 0 0; }
+  100% { background-position: 100% -100%; }
+}
+
+@keyframes skew-scroll {
+  0% {
+    transform: rotatex(20deg) rotateZ(-20deg) skewX(20deg) translateZ(0) translateY(0);
+  }
+  100% {
+    transform: rotatex(20deg) rotateZ(-20deg) skewX(20deg) translateZ(0) translateY(-100%);
+  }
+}
+
+@keyframes move {
+  0% { transform: translateX(-200px); }
+  100% { transform: translateX(200px); }
+}
+
+@keyframes smoothTranslate {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(4px); }
+}
+
+@keyframes ty {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes aurora {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
   }
 }
