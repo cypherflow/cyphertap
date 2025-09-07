@@ -1,5 +1,6 @@
 // src/lib/index.ts
 // Main component
+import './styles.css';
 export { default as Cyphertap } from '$lib/components/cyphertap/cyphertap.svelte';
 
 // Programmatic API
