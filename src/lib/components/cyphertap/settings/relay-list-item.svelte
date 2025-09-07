@@ -21,12 +21,6 @@
 		}
 	}
 
-	// Function placeholders for future actions
-	async function handlePrimaryRelay() {
-		// Placeholder for setting a relay as primary
-		console.log('Set as primary relay:', relay.url);
-		// Implement functionality when needed
-	}
 
 	async function handleCopyURL() {
 		// Placeholder for copying relay URL to clipboard
@@ -66,7 +60,6 @@
 			<DropdownMenuGroup>
 				<!-- Placeholder actions - uncomment or modify as needed -->
 				<DropdownMenuItem onclick={handleCopyURL}>Copy URL</DropdownMenuItem>
-				<DropdownMenuItem onclick={handlePrimaryRelay} disabled>Set as primary</DropdownMenuItem>
 				<!-- Additional actions can be added here -->
 			</DropdownMenuGroup>
 			<DropdownMenuSeparator />

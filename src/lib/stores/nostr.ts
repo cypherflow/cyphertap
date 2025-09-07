@@ -530,23 +530,25 @@ export const isLoggedIn = derived(currentUser, ($currentUser) => {
 
 // Derived store for relays list
 export const relays = derived(ndkInstance, ($ndk) => {
+  const d = debug.extend('relays');
   if (!$ndk) {
     console.log('No NDK instance, relay list is empty');
     return [];
   }
   const relayList = Array.from($ndk.pool.relays.values());
-  console.log(`Current relay list has ${relayList.length} relays`);
+  d.log(`Current relay list has ${relayList.length} relays`);
   return relayList;
 });
 
 // Derived store for relay connection status
 export const relayConnectionStatus = derived(relays, ($relays) => {
+  const d = debug.extend('relayConnectionStatus')
   const status = $relays.map((relay) => ({
     url: relay.url,
     connected: relay.status >= 5, // e.g., NDKRelayStatus.CONNECTED
     status: relay.status
   }));
 
-  console.log(`Relay connection status: ${status.filter(r => r.connected).length}/${status.length} connected`);
+  d.log(`Relay connection status: ${status.filter(r => r.connected).length}/${status.length} connected`);
   return status;
 });
