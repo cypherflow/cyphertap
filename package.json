@@ -1,7 +1,7 @@
 {
 	"name": "cyphertap",
 	"description": "Nostr, Lightning and Ecash on a single Button component",
-	"version": "0.0.32",
+	"version": "0.0.33",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
@@ -105,6 +105,9 @@
 		"lightning"
 	],
 	"dependencies": {
+		"@lucide/svelte": "^0.515.0",
+		"bits-ui": "^2.9.4",
+		"tailwind-merge": "^3.3.1",
 		"@cashu/cashu-ts": "^2.6.0",
 		"@castlenine/svelte-qrcode": "^2.3.0",
 		"@gandlaf21/bc-ur": "^1.1.12",
