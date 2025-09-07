@@ -105,6 +105,8 @@
 		"lightning"
 	],
 	"dependencies": {
+		"vaul-svelte": "1.0.0-next.7",
+		"tailwind-variants": "^1.0.0",
 		"@lucide/svelte": "^0.515.0",
 		"bits-ui": "^2.9.4",
 		"tailwind-merge": "^3.3.1",
