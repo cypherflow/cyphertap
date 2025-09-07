@@ -1,6 +1,7 @@
 <!-- src/lib/components/cyphertap/views/view-router.svelte -->
 <script lang="ts">
 	import { currentView, inTransition } from '$lib/stores/navigation.js';
+	import { MediaQuery } from 'svelte/reactivity';
 	import LoginGenerateKeyView from './login-generate-key-view.svelte';
 	import LoginLinkDeviceView from './login-link-device-view.svelte';
 	import LoginNip_07View from './login-nip-07-view.svelte';
@@ -14,7 +15,9 @@
 	import TransactionDetailsView from './transaction-details-view.svelte';
 	import TransactionHistoryView from './transaction-history-view.svelte';
 	
-	export let isDesktop = true;
+	export let isDesktop = new MediaQuery('(min-width: 768px)').current;
+	export let fullScreen = false;
+
 	// Component mapping
 	const viewComponents = {
 		'login': LoginView,
@@ -35,7 +38,7 @@
 <!-- Different wrapper based on container type -->
 {#if isDesktop}
 	<!-- For popover: original adaptive height behavior -->
-	<div class={`min-h-32 ${$inTransition ? 'relative' : 'h-full '}`}>
+	<div class={`min-h-32 border border-yellow-500 ${$inTransition ? 'relative' : 'h-full '}`}>
 		{#each Object.entries(viewComponents) as [name, Component]}
 			{#if $currentView === name}
 				<div class={$inTransition ? 'absolute inset-0' : ''}>
@@ -46,7 +49,7 @@
 	</div>
 {:else}
 	<!-- For drawer: fixed height container with scrolling content and max width -->
-	<div class="flex h-[70vh] justify-center overflow-y-auto">
+	<div class="flex min-h-[70vh] max-h-full justify-center overflow-y-auto border">
 		<div class="mx-auto w-full max-w-md">
 			<div class={$inTransition ? 'relative' : 'h-full'}>
 				{#each Object.entries(viewComponents) as [name, Component]}
