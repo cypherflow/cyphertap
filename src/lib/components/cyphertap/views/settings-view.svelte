@@ -18,6 +18,7 @@
     import ChevronLeft from '@lucide/svelte/icons/chevron-left';
     import Moon from '@lucide/svelte/icons/moon';
     import Sun from '@lucide/svelte/icons/sun';
+	import NegentropyManagement from '../negentropy/negentropy-management.svelte';
 
 	function toggleTheme() {
 		if (mode.current === 'dark') {
@@ -54,6 +55,7 @@
 
 			<Accordion type="multiple" class="">
 				<LinkDevices />
+				<NegentropyManagement />
 				<MintManagement />
 				<RelayManagement />
 				<NostrKeys />
