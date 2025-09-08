@@ -62,7 +62,7 @@ export function initNavigation() {
     currentView.set('main')
   } else {
     d.log("User is not logged in, current view set to login")
-    currentView.set('onboarding')
+    currentView.set('login')
   }
   //inTransition.set(false)
 }
@@ -80,7 +80,7 @@ export function navigateTo(
   // Handle reset view (go to main if logged in, login otherwise)
   if (view === 'reset') {
     const loggedIn = get(isLoggedIn);
-    view = loggedIn ? 'main' : 'onboarding';
+    view = loggedIn ? 'main' : 'login';
   }
 
   // Don't navigate if it's the same view
