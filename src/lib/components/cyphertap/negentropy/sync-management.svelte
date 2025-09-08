@@ -2,33 +2,26 @@
 <script lang="ts">
     import { AccordionItem, AccordionContent, AccordionTrigger } from '$lib/components/ui/accordion/index.js';
     import Button from '$lib/components/ui/button/button.svelte';
-    import { negentropySync } from '$lib/stores/negentropySync.svelte.js';
     import SyncList from './sync-list.svelte';
     import RefreshCw from '@lucide/svelte/icons/refresh-cw';
     import Database from '@lucide/svelte/icons/database';
+	import { RelaySync } from '$lib/stores/relaySync.svelte.js';
+    import { relays } from '$lib/stores/nostr.js';
 
-    async function handleSyncAll() {
-        try {
-            await negentropySync.startSync();
-        } catch (error) {
-            console.error('Sync failed:', error);
-        }
+
+    let relaySyncs = $state($relays.map(relay => new RelaySync(relay)));
+    let isSyncing = $state(false);
+    let isLoaded = $state(true);
+
+    function handleSyncAll() {
+
+        relaySyncs.forEach(async (relaySync) => {
+            await relaySync.sync();
+        })
+
+        return
     }
 
-    // Get summary info for display
-    $: totalRelays = negentropySync.progress.totalRelays;
-    $: completedRelays = negentropySync.progress.completedRelays;
-    $: errorCount = negentropySync.progress.errorCount;
-    $: isSyncing = negentropySync.isSyncing;
-    $: isLoaded = negentropySync.isLoaded;
-
-    function getSyncSummary() {
-        if (!isLoaded) return 'Negentropy library not loaded';
-        if (isSyncing) return `Syncing... (${completedRelays}/${totalRelays} complete)`;
-        if (totalRelays === 0) return 'No previous sync';
-        if (errorCount > 0) return `Last sync: ${completedRelays}/${totalRelays} successful, ${errorCount} errors`;
-        return `Last sync: ${completedRelays}/${totalRelays} relays completed`;
-    }
 </script>
 
 <AccordionItem>
@@ -49,11 +42,11 @@
                     This ensures your wallet state is consistent across all connected relays.
                 </p>
                 <p class="text-xs text-muted-foreground">
-                    Status: {getSyncSummary()}
+                    Status: {"synching... maybe...."}
                 </p>
             </div>
             
-            <SyncList />
+            <SyncList {relaySyncs}/>
             
             <Button 
                 onclick={handleSyncAll} 

@@ -1,19 +1,10 @@
 <!-- src/lib/components/sync-list.svelte -->
 <script lang="ts">
     import { relays } from '$lib/stores/nostr.js';
-    import { negentropySync } from '$lib/stores/negentropySync.svelte.js';
     import SyncListItem from './sync-list-item.svelte';
 
-    // Transform relay data to include sync state
-    $: relayStates = $relays.map(relay => {
-        const syncState = negentropySync.getRelayState(relay.url);
-        return {
-            url: relay.url,
-            connected: relay.connected,
-            status: relay.status,
-            syncState
-        };
-    });
+    let { relaySyncs = $bindable()} = $props();
+
 </script>
 
 <div class="space-y-3">
@@ -29,8 +20,8 @@
                 No relays configured
             </div>
         {:else}
-            {#each relayStates as relay (relay.url)}
-                <SyncListItem {relay} />
+            {#each relaySyncs as relaySync (relaySync.url)}
+                <SyncListItem {relaySync} />
             {/each}
         {/if}
     </div>
