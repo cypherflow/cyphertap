@@ -5,6 +5,7 @@
 :root {
   /* Your existing variables */
   --radius: 0.625rem;
+  --theta: 0deg;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -197,8 +198,12 @@
   .animate-gradient {
     animation: gradient 8s linear infinite;
   }
-  .animate-orbit {
-    animation: orbit calc(var(--duration)*1s) linear infinite;
+  .animate-orbit-cw {
+    animation: orbit-cw calc(var(--duration) * 1s) linear infinite;
+  }
+  
+  .animate-orbit-ccw {
+    animation: orbit-ccw calc(var(--duration) * 1s) linear infinite;
   }
   .animate-marquee {
     animation: marquee var(--duration) linear infinite;
@@ -429,12 +434,23 @@
   }
 }
 
-@keyframes orbit {
+/* Clockwise orbit (for positive theta) */
+@keyframes orbit-cw {
   0% {
-    transform: rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg);
+    transform: rotate(var(--theta)) translateY(calc(var(--radius) * 1px)) rotate(calc(-1 * var(--theta)));
   }
   100% {
-    transform: rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg);
+    transform: rotate(calc(var(--theta) + 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(-1 * (var(--theta) + 360deg)));
+  }
+}
+
+/* Counterclockwise orbit (for negative theta) */
+@keyframes orbit-ccw {
+  0% {
+    transform: rotate(var(--theta)) translateY(calc(var(--radius) * 1px)) rotate(calc(-1 * var(--theta)));
+  }
+  100% {
+    transform: rotate(calc(var(--theta) - 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(-1 * (var(--theta) - 360deg)));
   }
 }
 

@@ -52,9 +52,26 @@
 			{/if}
 		{/each}
 	</div>
-{:else}
+{:else if fullScreen}
+<!-- wallet mode -->
+	<div class="flex  max-h-full justify-center overflow-y-auto border">
+		<div class="mx-auto w-full max-w-md">
+			<div class={$inTransition ? 'relative' : 'h-full'}>
+				{#each Object.entries(viewComponents) as [name, Component]}
+					{#if $currentView === name}
+						<!-- Fixed top position when in drawer -->
+						<div class={$inTransition ? 'absolute inset-0' : ''}>
+							<svelte:component this={Component} />
+						</div>
+					{/if}
+				{/each}
+			</div>
+		</div>
+	</div>
+{:else} 
+<!-- Drawer -->
 	<!-- For drawer: fixed height container with scrolling content and max width -->
-	<div class="flex min-h-[70vh] max-h-full justify-center overflow-y-auto border">
+	<div class="flex min-h-[70vh] max-h-full justify-center overflow-y-auto">
 		<div class="mx-auto w-full max-w-md">
 			<div class={$inTransition ? 'relative' : 'h-full'}>
 				{#each Object.entries(viewComponents) as [name, Component]}

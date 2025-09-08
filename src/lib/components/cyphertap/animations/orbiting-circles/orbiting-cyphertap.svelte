@@ -1,130 +1,180 @@
-<script lang='ts'>
-  import { cn } from "$lib/utils.js";
-  import OrbitingCircles from "./orbiting-circles.svelte";
-  let className: any = "";
-  export { className as class };
+<script lang="ts">
+	import '$lib/styles.css';
+	import { cn } from '$lib/utils.js';
+    import KeyRound from '@lucide/svelte/icons/key-round';
+    import Waypoints from '@lucide/svelte/icons/waypoints'
+    import Landmark from '@lucide/svelte/icons/landmark'
+	import OrbitingCircles from './orbiting-circles.svelte';
+	let className: any = '';
+	export { className as class };
 </script>
 
 <div
-  class={cn(
-    "relative flex h-[400px] w-full max-w-[26rem] items-center justify-center overflow-hidden rounded-xl border bg-background md:shadow-xl",className
-  )}
+	class={cn(
+		'relative flex h-[400px] w-full max-w-[26rem] items-center justify-center overflow-hidden rounded-xl border bg-background md:shadow-xl',
+		className
+	)}
 >
-  <span
-    class="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-8xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10"
-  >
-    Svelte
-  </span>
+	<span
+		class="pointer-events-none bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-6xl leading-none font-semibold whitespace-pre-wrap text-transparent dark:from-white dark:to-slate-900/10"
+	>
+		CypherTap Wallet
+	</span>
 
-  <!--  Inner Circles  -->
-  <OrbitingCircles
-    class="h-[30px] w-[30px] border-none bg-transparent"
-    duration={20}
-    radius={80}
-  >
-    <!-- Open AI -->
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="256"
-      height="260"
-      preserveAspectRatio="xMidYMid"
-      viewBox="0 0 256 260"
-      ><path
-        fill="#fff"
-        d="M239.184 106.203a64.716 64.716 0 0 0-5.576-53.103C219.452 28.459 191 15.784 163.213 21.74A65.586 65.586 0 0 0 52.096 45.22a64.716 64.716 0 0 0-43.23 31.36c-14.31 24.602-11.061 55.634 8.033 76.74a64.665 64.665 0 0 0 5.525 53.102c14.174 24.65 42.644 37.324 70.446 31.36a64.72 64.72 0 0 0 48.754 21.744c28.481.025 53.714-18.361 62.414-45.481a64.767 64.767 0 0 0 43.229-31.36c14.137-24.558 10.875-55.423-8.083-76.483Zm-97.56 136.338a48.397 48.397 0 0 1-31.105-11.255l1.535-.87 51.67-29.825a8.595 8.595 0 0 0 4.247-7.367v-72.85l21.845 12.636c.218.111.37.32.409.563v60.367c-.056 26.818-21.783 48.545-48.601 48.601Zm-104.466-44.61a48.345 48.345 0 0 1-5.781-32.589l1.534.921 51.722 29.826a8.339 8.339 0 0 0 8.441 0l63.181-36.425v25.221a.87.87 0 0 1-.358.665l-52.335 30.184c-23.257 13.398-52.97 5.431-66.404-17.803ZM23.549 85.38a48.499 48.499 0 0 1 25.58-21.333v61.39a8.288 8.288 0 0 0 4.195 7.316l62.874 36.272-21.845 12.636a.819.819 0 0 1-.767 0L41.353 151.53c-23.211-13.454-31.171-43.144-17.804-66.405v.256Zm179.466 41.695-63.08-36.63L161.73 77.86a.819.819 0 0 1 .768 0l52.233 30.184a48.6 48.6 0 0 1-7.316 87.635v-61.391a8.544 8.544 0 0 0-4.4-7.213Zm21.742-32.69-1.535-.922-51.619-30.081a8.39 8.39 0 0 0-8.492 0L99.98 99.808V74.587a.716.716 0 0 1 .307-.665l52.233-30.133a48.652 48.652 0 0 1 72.236 50.391v.205ZM88.061 139.097l-21.845-12.585a.87.87 0 0 1-.41-.614V65.685a48.652 48.652 0 0 1 79.757-37.346l-1.535.87-51.67 29.825a8.595 8.595 0 0 0-4.246 7.367l-.051 72.697Zm11.868-25.58 28.138-16.217 28.188 16.218v32.434l-28.086 16.218-28.188-16.218-.052-32.434Z"
-      /></svg
-    >
-  </OrbitingCircles>
-  <OrbitingCircles
-    class="h-[30px] w-[30px] border-none bg-transparent"
-    duration={20}
-    radius={80}
-    delay={-10}
-  >
-    <!-- Supabase -->
-    <svg viewBox="0 0 109 113" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z"
-        fill="url(#paint0_linear)"
-      />
-      <path
-        d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z"
-        fill="url(#paint1_linear)"
-        fill-opacity="0.2"
-      />
-      <path
-        d="M45.317 2.07103C48.1765 -1.53037 53.9745 0.442937 54.0434 5.041L54.4849 72.2922H9.83113C1.64038 72.2922 -2.92775 62.8321 2.1655 56.4175L45.317 2.07103Z"
-        fill="#3ECF8E"
-      />
-      <defs>
-        <linearGradient
-          id="paint0_linear"
-          x1="53.9738"
-          y1="54.974"
-          x2="94.1635"
-          y2="71.8295"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stop-color="#249361" />
-          <stop offset="1" stop-color="#3ECF8E" />
-        </linearGradient>
-        <linearGradient
-          id="paint1_linear"
-          x1="36.1558"
-          y1="30.578"
-          x2="54.4844"
-          y2="65.0806"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop />
-          <stop offset="1" stop-opacity="0" />
-        </linearGradient>
-      </defs>
-    </svg>
-  </OrbitingCircles>
+	<!--  Inner Circles  -->
+	<OrbitingCircles
+		class="h-[30px] w-[30px] border-none bg-transparent"
+		duration={15}
+		radius={80}
+		theta={0}
+        cw={false}
+	>
+         <KeyRound size={40}/>
+	</OrbitingCircles>
+	<OrbitingCircles
+		class="h-[30px] w-[30px] border-none bg-transparent"
+		duration={15}
+		radius={80}
+		theta={120}
+        cw={false}
+	>
+		<Landmark size={40}/>
+	</OrbitingCircles>
+	<OrbitingCircles
+		class="h-[30px] w-[30px] border-none bg-transparent"
+		duration={15}
+		radius={80}
+		theta={240}
+        cw={false}
+	>
+		<Waypoints size={40}/>
+	</OrbitingCircles>
 
-  <!-- Outer Circles (reverse)  -->
-  <OrbitingCircles
-    class="h-[45px] w-[45px] border-none bg-transparent"
-    radius={160}
-    duration={20}
-    reverse
-  >
-    <!-- Svelte -->
-    <svg
-      viewBox="0 0 256 308"
-      width="256"
-      height="308"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="xMidYMid"
-      ><path
-        d="M239.682 40.707C211.113-.182 154.69-12.301 113.895 13.69L42.247 59.356a82.198 82.198 0 0 0-37.135 55.056 86.566 86.566 0 0 0 8.536 55.576 82.425 82.425 0 0 0-12.296 30.719 87.596 87.596 0 0 0 14.964 66.244c28.574 40.893 84.997 53.007 125.787 27.016l71.648-45.664a82.182 82.182 0 0 0 37.135-55.057 86.601 86.601 0 0 0-8.53-55.577 82.409 82.409 0 0 0 12.29-30.718 87.573 87.573 0 0 0-14.963-66.244"
-        fill="#FF3E00"
-      /><path
-        d="M106.889 270.841c-23.102 6.007-47.497-3.036-61.103-22.648a52.685 52.685 0 0 1-9.003-39.85 49.978 49.978 0 0 1 1.713-6.693l1.35-4.115 3.671 2.697a92.447 92.447 0 0 0 28.036 14.007l2.663.808-.245 2.659a16.067 16.067 0 0 0 2.89 10.656 17.143 17.143 0 0 0 18.397 6.828 15.786 15.786 0 0 0 4.403-1.935l71.67-45.672a14.922 14.922 0 0 0 6.734-9.977 15.923 15.923 0 0 0-2.713-12.011 17.156 17.156 0 0 0-18.404-6.832 15.78 15.78 0 0 0-4.396 1.933l-27.35 17.434a52.298 52.298 0 0 1-14.553 6.391c-23.101 6.007-47.497-3.036-61.101-22.649a52.681 52.681 0 0 1-9.004-39.849 49.428 49.428 0 0 1 22.34-33.114l71.664-45.677a52.218 52.218 0 0 1 14.563-6.398c23.101-6.007 47.497 3.036 61.101 22.648a52.685 52.685 0 0 1 9.004 39.85 50.559 50.559 0 0 1-1.713 6.692l-1.35 4.116-3.67-2.693a92.373 92.373 0 0 0-28.037-14.013l-2.664-.809.246-2.658a16.099 16.099 0 0 0-2.89-10.656 17.143 17.143 0 0 0-18.398-6.828 15.786 15.786 0 0 0-4.402 1.935l-71.67 45.674a14.898 14.898 0 0 0-6.73 9.975 15.9 15.9 0 0 0 2.709 12.012 17.156 17.156 0 0 0 18.404 6.832 15.841 15.841 0 0 0 4.402-1.935l27.345-17.427a52.147 52.147 0 0 1 14.552-6.397c23.101-6.006 47.497 3.037 61.102 22.65a52.681 52.681 0 0 1 9.003 39.848 49.453 49.453 0 0 1-22.34 33.12l-71.664 45.673a52.218 52.218 0 0 1-14.563 6.398"
-        fill="#FFF"
-      /></svg
-    >
-  </OrbitingCircles>
-  <OrbitingCircles
-    class="h-[45px] w-[45px] border-none bg-transparent"
-    radius={160}
-    duration={20}
-    delay={-10}
-    reverse
-  >
-    <!-- Github -->
-    <svg
-      viewBox="0 0 256 250"
-      width="80"
-      height="80"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="xMidYMid"
-    >
-      <path
-        d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0Zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931Zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66Zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08Zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27Zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622Zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868Zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403Z"
-      />
-    </svg>
-  </OrbitingCircles>
+	<!-- Outer Circles (reverse)  -->
+	<OrbitingCircles
+		class="h-[60px] w-[60px] border-none bg-transparent"
+		radius={160}
+		duration={20}
+        theta={0}
+	>
+		<svg
+			width="100"
+			height="100"
+			viewBox="0 0 1000 1000"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				d="M810 460.227V787.655C810 799.968 800.081 809.961 787.859 809.961H522.161C509.938 809.961 500.02 799.968 500.02 787.655V726.678C501.23 651.931 509.079 580.332 525.558 547.759C535.438 528.168 551.722 517.506 570.427 511.802C605.768 501.102 667.779 508.419 694.099 507.16C694.099 507.16 773.605 510.346 773.605 464.987C773.605 428.48 738.07 431.352 738.07 431.352C698.902 432.374 669.068 429.699 649.738 422.028C617.365 409.203 616.272 385.678 616.155 377.81C614.554 286.934 481.549 276.037 364.359 298.579C236.235 323.127 365.765 508.143 365.765 755.121V788.088C365.531 800.204 355.807 810 343.702 810H212.141C199.919 810 190 800.008 190 787.694V221.393C190 209.08 199.919 199.088 212.141 199.088H335.813C348.036 199.088 357.955 209.08 357.955 221.393C357.955 239.687 378.378 249.876 393.139 239.214C437.617 207.113 494.709 190 558.595 190C701.714 190 809.922 274.03 809.922 460.227H810ZM572.419 393.782C572.419 367.424 551.214 346.062 525.051 346.062C498.887 346.062 477.683 367.424 477.683 393.782C477.683 420.14 498.887 441.501 525.051 441.501C551.214 441.501 572.419 420.14 572.419 393.782Z"
+				fill="#662482"
+			/>
+		</svg>
+	</OrbitingCircles>
+	<OrbitingCircles
+		class="h-[80px] w-[80px] border-none bg-transparent"
+		radius={160}
+		duration={20}
+		theta={120}
+	>
+		<enhanced:img src="/static/cashu.png" alt="cashu nut" />
+	</OrbitingCircles>
+	<OrbitingCircles
+		class="h-[80px] w-[80px] border-none bg-transparent"
+		radius={160}
+		duration={20}
+        theta={240}
+		><svg
+			viewBox="0 0 944.88189 944.88185"
+			shape-rendering="geometricPrecision"
+			text-rendering="geometricPrecision"
+			image-rendering="optimizeQuality"
+			fill-rule="evenodd"
+			clip-rule="evenodd"
+			version="1.1"
+			id="svg2"
+			sodipodi:docname="Bitcoin-icon-Lightning Network-Inkscape.svg"
+			inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+			xml:space="preserve"
+			width="250mm"
+			height="250mm"
+			inkscape:export-filename="Bitcoin icon Lightning Network.pdf"
+			inkscape:export-xdpi="26.0096"
+			inkscape:export-ydpi="26.0096"
+			xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+			xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+			xmlns="http://www.w3.org/2000/svg"
+			xmlns:svg="http://www.w3.org/2000/svg"
+			><defs id="defs2" /><sodipodi:namedview
+				id="namedview2"
+				pagecolor="#ffffff"
+				bordercolor="#000000"
+				borderopacity="0.25"
+				inkscape:showpageshadow="2"
+				inkscape:pageopacity="0.0"
+				inkscape:pagecheckerboard="0"
+				inkscape:deskcolor="#d1d1d1"
+				inkscape:zoom="0.59326259"
+				inkscape:cx="165.18823"
+				inkscape:cy="558.77449"
+				inkscape:window-width="1920"
+				inkscape:window-height="1017"
+				inkscape:window-x="1912"
+				inkscape:window-y="-8"
+				inkscape:window-maximized="1"
+				inkscape:current-layer="svg2"
+				inkscape:document-units="mm"
+			/><g
+				inkscape:groupmode="layer"
+				id="layer1"
+				inkscape:label="icon Lightning"
+				style="display:inline"
+				><g
+					transform="matrix(8.5727987,0,0,8.2276115,-2760.2653,-3003.3283)"
+					id="bitcoin and bolt"
+					style="display:inline;opacity:1"
+					><path
+						d="m 396.52772,450.42357 c -1.115,-0.645 4.436,-8.302 10.161,-16.575 5.722,-8.275 9.591,-14.534 10.796,-16.386 1.205,-1.852 1.31693,-1.64491 0.66447,-4.65085 -4.0095,-18.47207 -22.7294,-37.82779 -48.31055,-32.9575 -25.5072,4.43281 -39.97419,32.69528 -32.4151,55.87864 9.20154,28.22067 37.51935,35.73348 55.80214,27.513 10.66445,-5.11841 12.81872,-10.84521 12.545,-11.04629 -0.426,-0.322 -5.819,0.204 -9.243,-1.776 z"
+						fill="#f7931a"
+						id="path5"
+						sodipodi:nodetypes="ccsscscccc"><title id="ball">B ball Zapped</title></path
+					><path
+						d="m 417.763,421.42 c 0,0 1.69628,-2.94654 1.411,1.197 -0.144,1.023 -4.077,18.911 -4.077,18.911 0,0.005 7.622,0.484 7.622,0.484 1.382,-0.014 0.712,1.04 0.712,1.04 l -20.327,27.405 c -2.923,4.144 -1.539,-0.727 -1.5,-1.439 3.555,-10.656 5.681,-16.693 6.384,-18.095 0,0 -8.98,-1.189 -8.93,-1.947 v -0.136 c 0.029,-0.35 2.306,-3.702 6.847,-10.048 6.854,-9.972 0.016,0.028 11.858,-17.372 z"
+						style="fill:#ffba00;fill-opacity:1"
+						id="path6"
+						sodipodi:nodetypes="cccccccccccc"><title id="bolt">Lightning bolt</title></path
+					><path
+						fill="white"
+						fill-rule="nonzero"
+						d="m 2947.77,1754.38 c 40.72,-272.26 -166.56,-418.61 -450,-516.24 l 91.95,-368.8 -224.5,-55.94 -89.51,359.09 c -59.02,-14.72 -119.63,-28.59 -179.87,-42.34 l 90.16,-361.46 -224.36,-55.94 -92,368.68 c -48.84,-11.12 -96.81,-22.11 -143.35,-33.69 l 0.26,-1.16 -309.59,-77.31 -59.72,239.78 c 0,0 166.56,38.18 163.05,40.53 90.91,22.69 107.35,82.87 104.62,130.57 l -251.94,1010.34 c -11.11,27.62 -39.31,69.07 -102.87,53.33 2.25,3.26 -163.17,-40.72 -163.17,-40.72 l -111.46,256.98 292.15,72.83 c 54.35,13.63 107.61,27.89 160.06,41.3 l -92.9,373.03 224.24,55.94 92,-369.07 c 61.26,16.63 120.71,31.97 178.91,46.43 l -91.69,367.33 224.51,55.94 92.89,-372.33 c 382.82,72.45 670.67,43.24 791.83,-303.02 97.63,-278.78 -4.86,-439.58 -206.26,-544.44 146.69,-33.83 257.18,-130.31 286.64,-329.61 l -0.07,-0.05 z m -512.93,719.26 c -69.38,278.78 -538.76,128.08 -690.94,90.29 l 123.28,-494.2 c 152.17,37.99 640.17,113.17 567.67,403.91 z m 69.43,-723.3 c -63.29,253.58 -453.96,124.75 -580.69,93.16 l 111.77,-448.21 c 126.73,31.59 534.85,90.55 468.94,355.05 z"
+						id="path2"
+						style="display:inline;opacity:1;fill:#ffffff;fill-opacity:1"
+						transform="matrix(0.02399203,0,0,0.02482302,328.14558,372.00896)"
+					/></g
+				><rect
+					style="display:none;fill:#ff0000;fill-opacity:0;stroke:#ff0000;stroke-width:0.140244"
+					id="rect2"
+					width="1.6855859"
+					height="983.15735"
+					x="471.59814"
+					y="9.9150181"
+					inkscape:label="AIm Horizontal"
+				/><rect
+					style="display:none;fill:#ff0000;fill-opacity:0;stroke:#ff0000;stroke-width:0.209818"
+					id="rect1"
+					width="990.91046"
+					height="3.7432735"
+					x="2.9973774"
+					y="470.56931"
+					inkscape:label="Aim Vertical"
+				/><circle
+					style="display:none;opacity:0.634921;fill:#fafafa;stroke:#ff0000"
+					id="path1"
+					cx="472.44095"
+					cy="472.44095"
+					inkscape:label="Aim Ball"
+					r="395.70917"
+				/></g
+			></svg
+		>
+	</OrbitingCircles>
 </div>

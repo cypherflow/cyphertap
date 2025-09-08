@@ -3,6 +3,6 @@
 
 </script>
 
-<div class="h-screen flex flex-col p-6 justify-center"> 
-<ViewRouter />
+<div class="h-screen flex flex-col p-2 justify-center"> 
+	<ViewRouter fullScreen/>
 </div>

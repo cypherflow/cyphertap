@@ -2,9 +2,9 @@
     import { cn } from "$lib/utils.js";
     let className: any = "";
     export { className as class };
-    export let reverse: boolean = false;
+    export let cw: boolean = true; // clock-wise orbit
     export let duration: number = 20;
-    export let delay: number = 0;
+    export let theta: number = 0; //0-360 degrees
     export let radius: number = 50;
     export let path: boolean = true;
   </script>
@@ -25,12 +25,11 @@
       />
     </svg>
     <div
-      style:--delay={delay}
+      style:--theta={`${theta}deg`}
       style:--duration={duration}
       style:--radius={radius}
       class={cn(
-        "absolute flex h-full w-full transform-gpu animate-orbit items-center justify-center rounded-full border bg-black/10 [animation-delay:calc(var(--delay)*1000ms)] dark:bg-white/10",
-        { "[animation-direction:reverse]": reverse },
+        `absolute flex h-full w-full transform-gpu  items-center justify-center rounded-full border bg-black/10 dark:bg-white/10 ${cw ? 'animate-orbit-cw': 'animate-orbit-ccw'}`,
         className
       )}
     >
