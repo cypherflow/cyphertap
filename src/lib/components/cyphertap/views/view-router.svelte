@@ -15,12 +15,14 @@
 	import TransactionDetailsView from './transaction-details-view.svelte';
 	import TransactionHistoryView from './transaction-history-view.svelte';
 	import OnboardingView from './onboarding-view.svelte';
+	import { loadNegentropy } from '$lib/utils/sync.js';
 	
 	export let isDesktop = new MediaQuery('(min-width: 768px)').current;
 	export let fullScreen = false;
 
 
 	initNavigation();
+	loadNegentropy();
 
 	// Component mapping
 	const viewComponents = {
