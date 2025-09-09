@@ -6,6 +6,25 @@ import type { NegentropyResult } from '$lib/types/negentropy.js';
 
 const debug = createDebug('negentropy:ws');
 
+export interface FilterWithEvents {
+    filter: NDKFilter;
+    localEvents: NDKEvent[];
+    name?: string;
+}
+
+export interface MultiFilterResult {
+    filterResults: Array<{
+        filter: NDKFilter;
+        name?: string;
+        have: string[];
+        need: string[];
+        success: boolean;
+        error?: string;
+    }>;
+    totalHave: string[];
+    totalNeed: string[];
+}
+
 export class NegentropyWebSocket {
     private ws: WebSocket | null = null;
     private url: string;
@@ -122,7 +141,7 @@ export class NegentropyWebSocket {
 // Negentropy protocol functions
 export async function createStorageFromEvents(events: NDKEvent[]): Promise<any> {
     const d = debug.extend('createStorage');
-    d.log(`Creating storage from ${events.length} events`);
+    d.log(`Creating storage from ${events.length} events...`);
     
     const { NegentropyStorageVector } = getNegentropy();
     const storage = new NegentropyStorageVector();
@@ -133,28 +152,16 @@ export async function createStorageFromEvents(events: NDKEvent[]): Promise<any> 
         
         if (id) {
             storage.insert(timestamp, id);
-            d.log(`Inserted event: ${id.slice(0, 8)}... timestamp: ${timestamp}`);
+            // d.log(`Inserted event: ${id.slice(0, 8)}... timestamp: ${timestamp}`);
         }
     }
     
     storage.seal();
-    d.log('Storage sealed and ready');
+    d.log('Storage sealed and ready!');
     return storage;
 }
 
-export function combineFilters(filters: import('$lib/types/negentropy.js').NegentropyFilters): NDKFilter {
-    const d = debug.extend('combineFilters');
-    const authors = filters.tokenEvents.authors!;
-    
-    const combined = {
-        authors,
-        kinds: [7375, 5, 17375, 7376],
-    };
-    
-    d.log('Combined filter:', combined);
-    return combined;
-}
-
+// Single filter sync (backward compatibility)
 export async function performNegentropySync(
     relayUrl: string, 
     filter: NDKFilter, 
@@ -162,115 +169,199 @@ export async function performNegentropySync(
     onProgress?: (message: string, roundCount: number) => void
 ): Promise<NegentropyResult> {
     const d = debug.extend('performSync');
-    d.log(`Starting Negentropy sync with ${relayUrl}`);
+    d.log(`Starting single filter Negentropy sync with ${relayUrl}`);
+    
+    const result = await performMultiFilterNegentropySync(
+        relayUrl,
+        [{ filter, localEvents }],
+        (filterIndex, message, roundCount) => {
+            onProgress?.(message, roundCount);
+        }
+    );
+    
+    if (result.filterResults.length > 0 && result.filterResults[0].success) {
+        return {
+            have: result.filterResults[0].have,
+            need: result.filterResults[0].need
+        };
+    } else {
+        throw new Error(result.filterResults[0]?.error || 'Unknown error');
+    }
+}
+
+// Multi-filter sync with single WebSocket connection
+export async function performMultiFilterNegentropySync(
+    relayUrl: string,
+    filtersWithEvents: FilterWithEvents[],
+    onProgress?: (filterIndex: number, message: string, roundCount: number) => void
+): Promise<MultiFilterResult> {
+    const d = debug.extend('performMultiSync');
+    d.log(`Starting multi-filter Negentropy sync with ${relayUrl} (${filtersWithEvents.length} filters)`);
     
     // Ensure Negentropy is loaded
     await loadNegentropy();
     const { Negentropy } = getNegentropy();
     
-    // Create storage and negentropy instance
-    const storage = await createStorageFromEvents(localEvents);
-    const negentropy = new Negentropy(storage, 50_000);
-    
-    // Create WebSocket connection
+    // Create WebSocket connection once
     const negentropyWs = new NegentropyWebSocket(relayUrl);
     await negentropyWs.connect();
+    d.log('WebSocket connected, starting filter processing');
     
-    const subscriptionId = `neg-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
-    d.log(`Generated subscription ID: ${subscriptionId}`);
-    
+    const filterResults: MultiFilterResult['filterResults'] = [];
     const allHave: string[] = [];
     const allNeed: string[] = [];
-    let roundCount = 0;
     
-    return new Promise((resolve, reject) => {
-        let isComplete = false;
-        
-        const handleNegentropyMessage = async (message: any[]) => {
-            const msgD = d.extend('handleMessage');
-            msgD.log('Handling Negentropy message:', message);
+    try {
+        // Process each filter sequentially
+        for (let filterIndex = 0; filterIndex < filtersWithEvents.length; filterIndex++) {
+            const { filter, localEvents, name } = filtersWithEvents[filterIndex];
+            
+            d.log(`Processing filter ${filterIndex + 1}/${filtersWithEvents.length}: ${name || 'Unnamed'}`);
             
             try {
-                const [type, subId, ...rest] = message;
+                // Create storage and negentropy instance for this filter
+                const storage = await createStorageFromEvents(localEvents);
+                const negentropy = new Negentropy(storage, 50_000);
                 
-                if (subId !== subscriptionId) {
-                    msgD.log(`Message not for us: ${subId} !== ${subscriptionId}`);
-                    return;
-                }
+                const subscriptionId = `neg-${Date.now()}-${filterIndex}-${Math.random().toString(36).slice(2, 5)}`;
+                d.log(`Generated subscription ID for filter ${filterIndex + 1}: ${subscriptionId}`);
                 
-                if (type === "NEG-ERR") {
-                    msgD.error('Negentropy error received:', rest[0]);
-                    throw new Error(`Negentropy error: ${rest[0]}`);
-                }
+                const filterHave: string[] = [];
+                const filterNeed: string[] = [];
+                let roundCount = 0;
                 
-                if (type === "NEG-MSG") {
-                    roundCount++;
-                    msgD.log(`📍 Reconciliation round ${roundCount}`);
-                    onProgress?.(`Reconciliation round ${roundCount}`, roundCount);
+                // Process this filter
+                const filterResult = await new Promise<{ have: string[], need: string[] }>((resolve, reject) => {
+                    let isComplete = false;
                     
-                    const response = rest[0];
-                    msgD.log('Calling negentropy.reconcile with response length:', response.length);
-                    
-                    const [newMsg, have, need] = await negentropy.reconcile(response);
-                    msgD.log(`Reconcile result - newMsg: ${newMsg ? newMsg.length : 'null'}, have: ${have.length}, need: ${need.length}`);
-                    
-                    // Accumulate results
-                    allHave.push(...have);
-                    allNeed.push(...need);
-                    
-                    // Continue reconciliation or finish
-                    if (newMsg !== null) {
-                        msgD.log('Continuing reconciliation...');
-                        const nextMessage = JSON.stringify(["NEG-MSG", subscriptionId, newMsg]);
-                        negentropyWs.send(nextMessage);
-                        msgD.log('Sent next NEG-MSG');
-                    } else {
-                        // Reconciliation complete
-                        msgD.log('🎉 Negentropy reconciliation complete!');
-                        isComplete = true;
+                    const handleNegentropyMessage = async (message: any[]) => {
+                        const msgD = d.extend(`filter${filterIndex + 1}`);
+                        msgD.log('Handling Negentropy message:', message);
                         
-                        // Send NEG-CLOSE
-                        const closeMessage = JSON.stringify(["NEG-CLOSE", subscriptionId]);
-                        negentropyWs.send(closeMessage);
-                        msgD.log('Sent NEG-CLOSE');
-                        
-                        // Clean up and resolve
-                        negentropyWs.removeMessageHandler(subscriptionId);
-                        negentropyWs.close();
-                        
-                        resolve({
-                            have: [...new Set(allHave)], // Deduplicate
-                            need: [...new Set(allNeed)]  // Deduplicate
-                        });
-                    }
-                }
+                        try {
+                            const [type, subId, ...rest] = message;
+                            
+                            if (subId !== subscriptionId) {
+                                msgD.log(`Message not for us: ${subId} !== ${subscriptionId}`);
+                                return;
+                            }
+                            
+                            if (type === "NEG-ERR") {
+                                msgD.error('Negentropy error received:', rest[0]);
+                                throw new Error(`Negentropy error: ${rest[0]}`);
+                            }
+                            
+                            if (type === "NEG-MSG") {
+                                roundCount++;
+                                msgD.log(`📍 Reconciliation round ${roundCount} for filter ${filterIndex + 1}`);
+                                onProgress?.(filterIndex, `Filter ${filterIndex + 1} round ${roundCount}`, roundCount);
+                                
+                                const response = rest[0];
+                                msgD.log('Calling negentropy.reconcile with response length:', response.length);
+                                
+                                const [newMsg, have, need] = await negentropy.reconcile(response);
+                                msgD.log(`Reconcile result - newMsg: ${newMsg ? newMsg.length : 'null'}, have: ${have.length}, need: ${need.length}`);
+                                
+                                // Accumulate results for this filter
+                                filterHave.push(...have);
+                                filterNeed.push(...need);
+                                
+                                // Continue reconciliation or finish
+                                if (newMsg !== null) {
+                                    msgD.log('Continuing reconciliation...');
+                                    const nextMessage = JSON.stringify(["NEG-MSG", subscriptionId, newMsg]);
+                                    negentropyWs.send(nextMessage);
+                                    msgD.log('Sent next NEG-MSG');
+                                } else {
+                                    // Reconciliation complete for this filter
+                                    msgD.log(`🎉 Filter ${filterIndex + 1} reconciliation complete!`);
+                                    isComplete = true;
+                                    
+                                    // Send NEG-CLOSE for this subscription
+                                    const closeMessage = JSON.stringify(["NEG-CLOSE", subscriptionId]);
+                                    negentropyWs.send(closeMessage);
+                                    msgD.log('Sent NEG-CLOSE for filter');
+                                    
+                                    // Clean up handler and resolve
+                                    negentropyWs.removeMessageHandler(subscriptionId);
+                                    
+                                    resolve({
+                                        have: [...new Set(filterHave)], // Deduplicate
+                                        need: [...new Set(filterNeed)]  // Deduplicate
+                                    });
+                                }
+                            }
+                        } catch (error) {
+                            msgD.error('Error handling negentropy message:', error);
+                            isComplete = true;
+                            negentropyWs.removeMessageHandler(subscriptionId);
+                            reject(error);
+                        }
+                    };
+                    
+                    // Register message handler for this filter
+                    negentropyWs.addMessageHandler(subscriptionId, handleNegentropyMessage);
+                    
+                    // Start protocol for this filter
+                    negentropy.initiate().then(msg => {
+                        const openMessage = JSON.stringify(["NEG-OPEN", subscriptionId, filter, msg]);
+                        negentropyWs.send(openMessage);
+                        d.log(`Sent NEG-OPEN message for filter ${filterIndex + 1}`);
+                    }).catch(reject);
+                    
+                    // Timeout for this filter
+                    setTimeout(() => {
+                        if (!isComplete) {
+                            d.error(`Filter ${filterIndex + 1} sync timeout`);
+                            negentropyWs.removeMessageHandler(subscriptionId);
+                            reject(new Error(`Filter ${filterIndex + 1} sync timeout`));
+                        }
+                    }, 60000); // 1 minute timeout per filter
+                });
+                
+                // Store result for this filter
+                filterResults.push({
+                    filter,
+                    name,
+                    have: filterResult.have,
+                    need: filterResult.need,
+                    success: true
+                });
+                
+                // Add to global collections
+                allHave.push(...filterResult.have);
+                allNeed.push(...filterResult.need);
+                
+                d.log(`Filter ${filterIndex + 1} complete - Have: ${filterResult.have.length}, Need: ${filterResult.need.length}`);
+                
             } catch (error) {
-                msgD.error('Error handling negentropy message:', error);
-                isComplete = true;
-                negentropyWs.removeMessageHandler(subscriptionId);
-                negentropyWs.close();
-                reject(error);
+                d.error(`Failed to process filter ${filterIndex + 1}:`, error);
+                
+                // Store error result
+                filterResults.push({
+                    filter,
+                    name,
+                    have: [],
+                    need: [],
+                    success: false,
+                    error: error instanceof Error ? error.message : 'Unknown error'
+                });
             }
-        };
+        }
         
-        // Register message handler
-        negentropyWs.addMessageHandler(subscriptionId, handleNegentropyMessage);
+        d.log('All filters processed, closing WebSocket');
         
-        // Start protocol
-        negentropy.initiate().then(msg => {
-            const openMessage = JSON.stringify(["NEG-OPEN", subscriptionId, filter, msg]);
-            negentropyWs.send(openMessage);
-            d.log('Sent NEG-OPEN message');
-        }).catch(reject);
-        
-        // Timeout
-        setTimeout(() => {
-            if (!isComplete) {
-                d.error('Negentropy sync timeout');
-                negentropyWs.removeMessageHandler(subscriptionId);
-                negentropyWs.close();
-                reject(new Error('Negentropy sync timeout'));
-            }
-        }, 120000);
-    });
+    } finally {
+        // Close WebSocket connection
+        negentropyWs.close();
+    }
+    
+    const result: MultiFilterResult = {
+        filterResults,
+        totalHave: [...new Set(allHave)], // Deduplicate across all filters
+        totalNeed: [...new Set(allNeed)]  // Deduplicate across all filters
+    };
+    
+    d.log(`Multi-filter sync complete - Total Have: ${result.totalHave.length}, Total Need: ${result.totalNeed.length}`);
+    return result;
 }

@@ -1,16 +1,22 @@
 // src/lib/stores/relaySync.svelte.ts
 import { createDebug } from '$lib/utils/debug.js';
 import { getNDK } from './nostr.js';
-import { performNegentropySync, combineFilters } from '$lib/utils/negentropyWebSocket.js';
-import type { RelaySyncState, NegentropyFilters } from '$lib/types/negentropy.js';
+import { performMultiFilterNegentropySync, type FilterWithEvents } from '$lib/utils/negentropyWebSocket.js';
+import type { RelaySyncState, FilterSyncResult, SyncResult } from '$lib/types/negentropy.js';
 import { 
     NDKSubscriptionCacheUsage, 
     type NDKEvent, 
     type NDKRelay,
+    type NDKFilter,
     NDKRelaySet
 } from '@nostr-dev-kit/ndk';
 
 const debug = createDebug('relay-sync');
+
+export interface FilterConfig {
+    filter: NDKFilter;
+    name?: string; // Optional descriptive name
+}
 
 export class RelaySync {
     url = $state('');
@@ -24,96 +30,96 @@ export class RelaySync {
         roundCount: 0
     });
     error = $state<string | undefined>(undefined);
-    subscriptionId = $state<string | undefined>(undefined);
-    negentropy = $state<any>(undefined);
+    lastSyncResult = $state<SyncResult | undefined>(undefined);
     
     private relay: NDKRelay;
     private debug;
+    private filters: FilterConfig[];
     
-    constructor(relay: NDKRelay) {
+    constructor(relay: NDKRelay, filters: NDKFilter[] | FilterConfig[] = []) {
         this.relay = relay;
         this.url = relay.url;
         this.debug = debug.extend(new URL(relay.url).hostname);
-    }
-    
-    // Generate filters for wallet-related events
-    private generateWalletFilters(userPubkey: string): NegentropyFilters {
-        const d = this.debug.extend('generateFilters');
-        d.log(`Generating filters for user: ${userPubkey}`);
         
-        const filters = {
-            tokenEvents: {
-                authors: [userPubkey],
-                kinds: [7375]
-            },
-            deleteEvents: {
-                authors: [userPubkey],
-                kinds: [5],
-                // "#k": ["7375"]
-            },
-            walletEvents: {
-                authors: [userPubkey],
-                kinds: [17375]
-            },
-            historyEvents: {
-                authors: [userPubkey],
-                kinds: [7376]
+        // Normalize filters to FilterConfig format
+        this.filters = filters.map((filter, index) => {
+            if ('filter' in filter) {
+                return filter as FilterConfig;
+            } else {
+                return {
+                    filter: filter as NDKFilter,
+                    name: `Filter ${index + 1}`
+                };
             }
-        };
+        });
+    }
+    // Update filters
+    setFilters(filters: NDKFilter[] | FilterConfig[]): void {
+        const d = this.debug.extend('setFilters');
+        d.log(`Setting ${filters.length} filters`);
         
-        d.log('Generated filters:', filters);
-        return filters;
+        this.filters = filters.map((filter, index) => {
+            if ('filter' in filter) {
+                return filter as FilterConfig;
+            } else {
+                return {
+                    filter: filter as NDKFilter,
+                    name: `Filter ${index + 1}`
+                };
+            }
+        });
+        
+        d.log('Filters set:', this.filters.map(f => f.name));
     }
     
-    // Get all local events matching the filters
-    private async getLocalEvents(filters: NegentropyFilters): Promise<NDKEvent[]> {
-        const d = this.debug.extend('getLocalEvents');
+    // Add a single filter
+    addFilter(filter: NDKFilter, name?: string): void {
+        const filterConfig: FilterConfig = {
+            filter,
+            name: name || `Filter ${this.filters.length + 1}`
+        };
+        this.filters.push(filterConfig);
+    }
+    
+    // Get all local events matching a specific filter
+    private async getLocalEventsForFilter(filter: NDKFilter): Promise<NDKEvent[]> {
+        const d = this.debug.extend('getLocalEventsForFilter');
         const ndk = getNDK();
         
-        d.log('Fetching local events from cache...');
-        
-        const allEvents = new Set<NDKEvent>();
-        
-        const filterList = [
-            { name: 'tokenEvents', filter: filters.tokenEvents },
-            { name: 'deleteEvents', filter: filters.deleteEvents },
-            { name: 'walletEvents', filter: filters.walletEvents },
-            { name: 'historyEvents', filter: filters.historyEvents }
-        ];
-        
-        for (const { name, filter } of filterList) {
-            try {
-                d.log(`Fetching ${name} with filter:`, filter);
-                const events = await ndk.fetchEvents(filter, {
-                    cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
-                });
-                d.log(`Found ${events.size} events for ${name}`);
-                events.forEach(event => allEvents.add(event));
-            } catch (error) {
-                d.warn(`Failed to fetch events for ${name}:`, error);
-            }
+        try {
+            d.log('Fetching local events with filter:', filter);
+            const events = await ndk.fetchEvents(filter, {
+                cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
+            });
+            
+            const result = Array.from(events);
+            d.log(`Found ${result.length} local events for filter`);
+            return result;
+        } catch (error) {
+            d.warn('Failed to fetch events for filter:', error);
+            return [];
         }
-        
-        const result = Array.from(allEvents);
-        d.log(`Total unique local events: ${result.length}`);
-        return result;
     }
-    
+
     // Upload events using NDK
     private async uploadEvents(eventIds: string[], localEvents: NDKEvent[]): Promise<void> {
         const d = this.debug.extend('uploadEvents');
         d.log(`Uploading ${eventIds.length} events`);
+
+        let ndk = getNDK();
+        let relaySet: NDKRelaySet = new NDKRelaySet(new Set([this.relay]), ndk)
         
-        this.status = 'uploading';
-        this.progress.phase = 'uploading';
-        this.progress.message = `Uploading ${eventIds.length} events...`;
+        let uploadedCount = 0;
         
         for (const eventId of eventIds) {
             const event = localEvents.find(e => e.id === eventId);
             if (event) {
                 try {
                     d.log(`📤 Uploading event: ${eventId.slice(0, 8)}...`);
-                    await this.relay.publish(event);
+                    event.ndk = ndk;
+                    await event.publish(relaySet);
+                    uploadedCount++;
+                    this.progress.message = `Uploaded ${uploadedCount}/${eventIds.length} events`;
                     d.log(`✅ Successfully uploaded: ${eventId.slice(0, 8)}...`);
                 } catch (error) {
                     d.warn(`❌ Failed to upload event ${eventId}:`, error);
@@ -123,7 +129,7 @@ export class RelaySync {
             }
         }
         
-        d.log(`Upload complete: ${eventIds.length} events processed`);
+        d.log(`Upload complete: ${uploadedCount}/${eventIds.length} events uploaded successfully`);
     }
     
     // Download specific events using NDK
@@ -136,13 +142,9 @@ export class RelaySync {
             return;
         }
         
-        this.status = 'downloading';
-        this.progress.phase = 'downloading';
-        this.progress.message = `Downloading ${eventIds.length} events...`;
-        
         const ndk = getNDK();
         
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const timeout = setTimeout(() => {
                 d.warn('Download timeout reached, resolving anyway');
                 resolve();
@@ -176,84 +178,169 @@ export class RelaySync {
         });
     }
     
-    // Main sync method
-    sync = async (): Promise<void> => {
-        const d = this.debug.extend('sync');
-        d.log(`🔄 Starting sync with relay: ${this.url}`);
+    // Perform Negentropy reconciliation only (no upload/download) - now uses single WebSocket
+    reconcileOnly = async (): Promise<FilterSyncResult[]> => {
+        const d = this.debug.extend('reconcileOnly');
+        d.log(`🔄 Starting reconciliation-only with relay: ${this.url}`);
+        
+        if (this.filters.length === 0) {
+            throw new Error('No filters configured for sync');
+        }
         
         try {
             // Reset state
             this.status = 'connecting';
             this.progress = {
                 phase: 'init',
-                message: 'Initializing sync...',
+                message: 'Initializing reconciliation...',
                 haveCount: 0,
                 needCount: 0,
                 totalProcessed: 0,
                 roundCount: 0,
+                currentFilter: 0,
+                totalFilters: this.filters.length,
                 startTime: Date.now()
             };
             this.error = undefined;
             
-            const ndk = getNDK();
-            const user = ndk.activeUser;
+            d.log(`Processing ${this.filters.length} filters with single WebSocket connection`);
             
-            if (!user?.pubkey) {
-                throw new Error('User not initialized');
+            // Prepare filters with their local events
+            const filtersWithEvents: FilterWithEvents[] = [];
+            
+            for (let i = 0; i < this.filters.length; i++) {
+                const filterConfig = this.filters[i];
+                this.progress.message = `Fetching local events for ${filterConfig.name}...`;
+                
+                try {
+                    const localEvents = await this.getLocalEventsForFilter(filterConfig.filter);
+                    filtersWithEvents.push({
+                        filter: filterConfig.filter,
+                        localEvents,
+                        name: filterConfig.name
+                    });
+                    d.log(`Prepared filter ${i + 1}: ${filterConfig.name} with ${localEvents.length} events`);
+                } catch (error) {
+                    d.error(`Failed to get local events for filter ${i + 1}:`, error);
+                    // Still add the filter but with empty events
+                    filtersWithEvents.push({
+                        filter: filterConfig.filter,
+                        localEvents: [],
+                        name: filterConfig.name
+                    });
+                }
             }
             
-            d.log(`Starting sync for user: ${user.pubkey}`);
-            
-            // Get local events
-            this.progress.message = 'Fetching local events...';
-            this.progress.phase = 'init';
-            
-            const filters = this.generateWalletFilters(user.pubkey);
-            const localEvents = await this.getLocalEvents(filters);
-            
-            this.progress.message = `Found ${localEvents.length} local events`;
-            d.log(`Found ${localEvents.length} local events`);
-            
-            // Perform Negentropy sync
+            // Perform multi-filter sync with single WebSocket
             this.status = 'syncing';
             this.progress.phase = 'reconciling';
             this.progress.message = 'Starting reconciliation...';
             
-            const combinedFilter = combineFilters(filters);
-            const result = await performNegentropySync(
+            const result = await performMultiFilterNegentropySync(
                 this.url,
-                combinedFilter, 
-                localEvents,
-                (message, roundCount) => {
+                filtersWithEvents,
+                (filterIndex, message, roundCount) => {
+                    this.progress.currentFilter = filterIndex + 1;
                     this.progress.message = message;
                     this.progress.roundCount = roundCount;
                 }
             );
             
-            d.log(`Negentropy complete - Have: ${result.have.length}, Need: ${result.need.length}`);
+            // Convert results to FilterSyncResult format
+            const filterResults: FilterSyncResult[] = result.filterResults.map((filterResult, index) => ({
+                filter: filterResult.filter,
+                filterIndex: index,
+                filterName: filterResult.name,
+                have: filterResult.have,
+                need: filterResult.need,
+                localEvents: filtersWithEvents[index]?.localEvents || [],
+                error: filterResult.success ? undefined : filterResult.error
+            }));
             
-            // Update counts
-            this.progress.haveCount = result.have.length;
-            this.progress.needCount = result.need.length;
-            this.progress.totalProcessed = result.have.length + result.need.length;
+            // Update overall progress
+            this.progress.haveCount = result.totalHave.length;
+            this.progress.needCount = result.totalNeed.length;
+            this.progress.totalProcessed = result.totalHave.length + result.totalNeed.length;
+            
+            // Complete
+            this.status = 'complete';
+            this.progress.phase = 'done';
+            this.progress.message = `Reconciliation complete: ${this.progress.haveCount} to upload, ${this.progress.needCount} to download`;
+            this.progress.endTime = Date.now();
+            
+            d.log('✅ Multi-filter reconciliation completed successfully');
+            return filterResults;
+            
+        } catch (error) {
+            d.error(`❌ Reconciliation failed:`, error);
+            this.status = 'error';
+            this.error = error instanceof Error ? error.message : 'Unknown error';
+            this.progress.message = `Error: ${this.error}`;
+            this.progress.endTime = Date.now();
+            throw error;
+        }
+    };
+    
+    // Full sync method (reconciliation + upload/download)
+    sync = async (): Promise<SyncResult> => {
+        const d = this.debug.extend('sync');
+        d.log(`🔄 Starting full sync with relay: ${this.url}`);
+        
+        try {
+            // First, perform reconciliation
+            const filterResults = await this.reconcileOnly();
+            
+            // Collect all events to upload and download
+            const allHave: string[] = [];
+            const allNeed: string[] = [];
+            const allLocalEvents: NDKEvent[] = [];
+            
+            for (const result of filterResults) {
+                allHave.push(...result.have);
+                allNeed.push(...result.need);
+                allLocalEvents.push(...result.localEvents);
+            }
+            
+            // Remove duplicates
+            const uniqueHave = [...new Set(allHave)];
+            const uniqueNeed = [...new Set(allNeed)];
+            const uniqueLocalEvents = Array.from(
+                new Map(allLocalEvents.map(e => [e.id, e])).values()
+            );
             
             // Upload events we have that relay needs
-            if (result.have.length > 0) {
-                await this.uploadEvents(result.have, localEvents);
+            if (uniqueHave.length > 0) {
+                this.status = 'uploading';
+                this.progress.phase = 'uploading';
+                this.progress.message = `Uploading ${uniqueHave.length} events...`;
+                await this.uploadEvents(uniqueHave, uniqueLocalEvents);
             }
             
             // Download events we need from relay
-            if (result.need.length > 0) {
-                await this.downloadEvents(result.need);
+            if (uniqueNeed.length > 0) {
+                this.status = 'downloading';
+                this.progress.phase = 'downloading';
+                this.progress.message = `Downloading ${uniqueNeed.length} events...`;
+                await this.downloadEvents(uniqueNeed);
             }
             
             // Complete
             this.status = 'complete';
             this.progress.phase = 'done';
-            this.progress.message = `Sync complete: ${this.progress.haveCount} uploaded, ${this.progress.needCount} downloaded`;
+            this.progress.message = `Sync complete: ${uniqueHave.length} uploaded, ${uniqueNeed.length} downloaded`;
             this.progress.endTime = Date.now();
             
-            d.log('✅ Sync completed successfully');
+            const syncResult: SyncResult = {
+                totalHave: uniqueHave.length,
+                totalNeed: uniqueNeed.length,
+                filterResults,
+                duration: this.duration,
+                success: true
+            };
+            
+            this.lastSyncResult = syncResult;
+            d.log('✅ Full sync completed successfully');
+            return syncResult;
             
         } catch (error) {
             d.error(`❌ Sync failed:`, error);
@@ -261,6 +348,17 @@ export class RelaySync {
             this.error = error instanceof Error ? error.message : 'Unknown error';
             this.progress.message = `Error: ${this.error}`;
             this.progress.endTime = Date.now();
+            
+            const errorResult: SyncResult = {
+                totalHave: 0,
+                totalNeed: 0,
+                filterResults: [],
+                success: false,
+                error: this.error
+            };
+            
+            this.lastSyncResult = errorResult;
+            throw error;
         }
     };
     
@@ -276,8 +374,7 @@ export class RelaySync {
             roundCount: 0
         };
         this.error = undefined;
-        this.subscriptionId = undefined;
-        this.negentropy = undefined;
+        this.lastSyncResult = undefined;
     };
     
     // Get sync duration
@@ -295,4 +392,28 @@ export class RelaySync {
                this.status === 'downloading' ||
                this.status === 'connecting';
     }
+    
+    // Get current filter info
+    get currentFilterInfo(): string {
+        if (this.progress.currentFilter && this.progress.totalFilters) {
+            return `${this.progress.currentFilter}/${this.progress.totalFilters}`;
+        }
+        return '';
+    }
+}
+
+// Helper function to create wallet-specific RelaySync
+export function createWalletRelaySync(relay: NDKRelay, userPubkey: string): RelaySync {
+    const walletFilters: FilterConfig[] = [
+        {
+            filter: { authors: [userPubkey], kinds: [17375, 7375, 7376] },
+            name: 'Wallet Tokens and History Events'
+        },
+        {
+            filter: { authors: [userPubkey], kinds: [5], "#k": ["7375"] },
+            name: 'Delete Events'
+        }
+    ];
+    
+    return new RelaySync(relay, walletFilters);
 }

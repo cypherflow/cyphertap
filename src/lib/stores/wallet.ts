@@ -7,7 +7,7 @@ import {
   NDKCashuWallet,
   type MintUrl
 } from '@nostr-dev-kit/ndk-wallet';
-import { NDKCashuMintList } from '@nostr-dev-kit/ndk';
+import { NDKCashuMintList, NDKRelay } from '@nostr-dev-kit/ndk';
 import {
   NDKRelaySet,
   NDKSubscriptionCacheUsage,
@@ -1009,31 +1009,79 @@ export async function setAsMainMint(url: string) {
   }
 }
 
+// Add wallet relay
+// Add a mint to the wallet
+export async function addWalletRelay(url: string) {
+  const d = debug.extend('addWalletRelay');
+  d.log(`Adding relay: ${url}`);
+  if (!url.trim()) {
+    d.error('relay URL cannot be empty');
+    throw new Error('Relay URL cannot be empty');
+  }
+
+  const ndk = getNDK();
+  const currentWallet = get(wallet);
+  if (!currentWallet) {
+    d.error('Wallet not initialized');
+    throw new Error('Wallet not initialized');
+  }
+
+  try {
+    // Don't add duplicates
+    if (currentWallet.relaySet?.relayUrls.includes(url.trim())) {
+      d.warn(`Relay ${url} is already in wallet relay set`);
+      throw new Error('This relay is already in your wallet relay set');
+    }
+
+    // TODO: check connection to relay
+
+    // Add the mint to the wallet
+    d.log(`Adding relay ${url} to wallet relay set...`);
+    currentWallet.relaySet?.addRelay(new NDKRelay(url.trim(), undefined,ndk));
+
+    d.log("current wallet relay set ", currentWallet.relaySet)
+
+    // Update the store to trigger derived stores
+    wallet.update((w) => w);
+
+    // Publish the updated wallet and mintlist
+    d.log('Publishing updated wallet and relay list...');
+    await publishWalletWithMints();
+
+    dMint.log(`✅ Mint ${url} added successfully`);
+  } catch (error) {
+    dMint.error(`❌ Error adding mint:`, error);
+    throw error;
+  }
+}
+
 // Publish wallet and mint list as Nostr events
 async function publishWalletWithMints() {
+  const d = debug.extend("publishCurrentWallet")
   dMint.log('Publishing wallet and mint list...');
   const ndk = getNDK();
   const currentWallet = get(wallet);
 
   if (!currentWallet) {
-    dMint.error('Wallet not initialized');
+    d.error('Wallet not initialized');
     throw new Error('Wallet not initialized');
   }
 
   try {
     // Publish the updated wallet
-    dMint.log('Publishing wallet event...');
+    d.log('Publishing wallet event...');
     await currentWallet.publish();
 
     // Also update the mintlist for nutzap reception
-    dMint.log('Publishing mintlist for nutzap reception...');
+    d.log('Publishing Nutzap informational event (NIP-61)...');
     const mintlistForNutzapReception = new NDKCashuMintList(ndk);
     mintlistForNutzapReception.relays = currentWallet.relaySet?.relayUrls || [];
     mintlistForNutzapReception.mints = currentWallet.mints;
     mintlistForNutzapReception.p2pk = currentWallet.p2pk;
     await mintlistForNutzapReception.publishReplaceable();
+    d.log('nip-61 event published: ', mintlistForNutzapReception)
 
-    dMint.log('✅ Wallet and mint list published successfully');
+    d.log('✅ Wallet and mint list published successfully');
   } catch (error) {
     dMint.error('❌ Failed to publish wallet with updated mints', error);
     throw error;
