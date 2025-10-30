@@ -4,6 +4,7 @@
 
 Stop reinventing the wheel for every Nostr app. CypherTap gives you a complete authentication and payment solution with both a ready-to-use UI component and a comprehensive programmatic API - drop it in your Svelte app and you're done.
 
+Follow me on [Nostr](https://njump.me/npub1strjxxh7fzhrvgkraew4fpt6ppu973sc3p9cm2mehl0naq22hars007wsf) to see me build this library and other stuff live on stream.
 [![NPM Version](https://img.shields.io/npm/v/cyphertap)](https://www.npmjs.com/package/cyphertap)
 [![License](https://img.shields.io/npm/l/cyphertap)](https://github.com/cypherflow/cyphertap/blob/main/LICENSE)
 
