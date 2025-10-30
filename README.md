@@ -1,6 +1,8 @@
 # CypherTap
 
-A Svelte component library that provides a complete Nostr, Lightning, and Ecash wallet solution in a single button component.
+**Nostr, Lightning & Ecash in a Single Svelte Component**
+
+Stop reinventing the wheel for every Nostr app. CypherTap gives you a complete authentication and payment solution with both a ready-to-use UI component and a comprehensive programmatic API - drop it in your Svelte app and you're done.
 
 [![NPM Version](https://img.shields.io/npm/v/cyphertap)](https://www.npmjs.com/package/cyphertap)
 [![License](https://img.shields.io/npm/l/cyphertap)](https://github.com/cypherflow/cyphertap/blob/main/LICENSE)
