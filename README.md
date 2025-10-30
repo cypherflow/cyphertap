@@ -278,6 +278,7 @@ CypherTap implements several Nostr Improvement Proposals (NIPs):
 
 ### Future Improvements
 
+- Improve wallet and Nostr sync with [Negentropy](https://github.com/hoytech/negentropy)
 - Encrypted key storage using browser-native encryption APIs
 - Optional password protection for locally stored keys
 - Ecash Spending conditions views and userflows (NUT-10, NUT-11, NUT-12, NUT-14)
