@@ -5,8 +5,8 @@ import { BROWSER as browser } from 'esm-env';
 // Import all the stores and methods we need to clean up
 import { logout as nostrLogout, currentUser } from '$lib/stores/nostr.js';
 import { clearWallet } from '$lib/stores/wallet.js';
-import { appState, InitStatus } from './init.svelte.js';
 import { createDebug } from '$lib/utils/debug.js';
+import { logoutWallet } from '$lib/stores/wallet.svelte.js';
 
 // Create debug logger for logout service
 const d = createDebug('logout');
@@ -55,16 +55,13 @@ export async function logout(
   const { clearDatabase = false } = options;
 
   try {
-    // Update app state
-    appState.status = InitStatus.IDLE;
-    appState.isInitialized = false;
-    appState.error = null;
 
     // 1. Get current user before logout (if we need to clear the database)
     const user = clearDatabase ? get(currentUser) : null;
 
     // 2. Clear the wallet state
     clearWallet();
+    logoutWallet();
 
     // 3. Clear cache if requested
     if (clearDatabase && user) {

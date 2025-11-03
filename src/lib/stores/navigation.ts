@@ -1,8 +1,8 @@
 // src/lib/client/stores/wallet-navigation.ts
 import { writable, get } from 'svelte/store';
 import type { NDKCashuWalletTx } from '@nostr-dev-kit/ndk';
-import { isLoggedIn } from './nostr.js';
 import { createDebug } from '$lib/utils/debug.js';
+import { nostr } from './nostr.svelte.js';
 
 // Create debug logger for navigation 
 const debug = createDebug('navigation');
@@ -57,7 +57,7 @@ export const inTransition = writable<boolean>(false);
 export function initNavigation() {
   const d = debug.extend('initNavigation')
   //inTransition.set(false)
-  if (get(isLoggedIn)) {
+  if (nostr.ndk) {
     d.log("User is logged in, current view set to main")
     currentView.set('main')
   } else {
@@ -79,7 +79,7 @@ export function navigateTo(
 
   // Handle reset view (go to main if logged in, login otherwise)
   if (view === 'reset') {
-    const loggedIn = get(isLoggedIn);
+    const loggedIn = nostr.ndk;
     view = loggedIn ? 'main' : 'login';
   }
 

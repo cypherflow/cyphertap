@@ -1,10 +1,10 @@
 <!-- src/lib/components/wallet/RecentTransactions.svelte -->
 <script lang="ts">
-	import {
-		walletTransactions,
-		formatTransaction,
-		isLoadingTransactions
-	} from '$lib/stores/wallet.js';
+	// import {
+	// 	walletTransactions,
+	// 	formatTransaction,
+	// 	isLoadingTransactions
+	// } from '$lib/stores/wallet.js';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
     import ArrowDownLeft from '@lucide/svelte/icons/arrow-down-left'
     import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right'

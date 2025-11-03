@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { LogIn, Wallet } from '@lucide/svelte';
 	import Button from '../ui/button/button.svelte';
 	import Skeleton from '../ui/skeleton/skeleton.svelte';
-	import { isWalletReady, walletBalance } from '$lib/stores/wallet.js';
 	import { isLoggedIn, isConnecting } from '$lib/stores/nostr.js';
+	import { wallet } from '$lib/stores/wallet.svelte.js';
+	import LogIn from '@lucide/svelte/icons/log-in';
+	import Wallet from '@lucide/svelte/icons/wallet';
 
 	// Format balance for display
 	function formatBalance(balance: number): string {
@@ -15,8 +16,8 @@
 	<Button variant="default">
 		<!-- Wallet Balance Display -->
 		<Wallet class="h-5 w-5" />
-		{#if $isWalletReady}
-			<span class="font-medium">{formatBalance($walletBalance)} sats</span>
+		{#if true}
+			<span class="font-medium">{formatBalance(wallet.balance.total)} sats</span>
 		{:else}
 			<Skeleton class="h-4 w-16" />
 		{/if}

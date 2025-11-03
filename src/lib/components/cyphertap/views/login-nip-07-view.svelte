@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { isConnecting, login } from '$lib/stores/nostr.js';
-	import { appState, InitStatus } from '$lib/services/init.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import { isUserMenuOpen, navigateTo } from '$lib/stores/navigation.js';
 	import { onMount } from 'svelte';
 	import ViewContainer from './view-container.svelte';
+	import { nostr } from '$lib/stores/nostr.svelte.js';
 
 	let hasNostrExtension = $state<boolean>(!!window.nostr);
 	let errorMessage = $state<string>('');
@@ -79,7 +79,7 @@
 				<!-- Loading animation when attempting to connect -->
 				<div class="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
 				<p class="text-sm font-medium">
-					{$isConnecting || appState.status === InitStatus.INITIALIZING
+					{!nostr.ndk 
 						? 'Connecting to extension...'
 						: 'Waiting for extension approval...'}
 				</p>
@@ -104,7 +104,6 @@
 			<Button
 				class="w-full"
 				onclick={checkForExtension}
-				disabled={isLoading || $isConnecting || appState.status === InitStatus.INITIALIZING}
 			>
 				{hasNostrExtension ? 'Try Again' : 'Check Again for Extension'}
 			</Button>

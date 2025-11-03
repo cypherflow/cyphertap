@@ -12,7 +12,6 @@ import {
   ndkInstance, 
   currentUser, 
   relayConnectionStatus,
-  autoLogin
 } from '$lib/stores/nostr.js';
 import { 
   wallet, 

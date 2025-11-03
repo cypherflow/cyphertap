@@ -16,6 +16,7 @@
 	import TransactionHistoryView from './transaction-history-view.svelte';
 	import OnboardingView from './onboarding-view.svelte';
 	import { loadNegentropy } from '$lib/utils/negentropy.js';
+	import MainRunesView from './main-runes-view.svelte';
 	
 	export let isDesktop = new MediaQuery('(min-width: 768px)').current;
 	export let fullScreen = false;
@@ -32,10 +33,11 @@
 		'login-link-device': LoginLinkDeviceView,
 		'login-nip-07': LoginNip_07View,
 		'login-generate-key': LoginGenerateKeyView,
+		// 'main': MainRunesView,//MainView,
 		'main': MainView,
 		'receive': ReceiveView,
 		'send': SendView,
-		'transaction-history': TransactionHistoryView,
+		// 'transaction-history': TransactionHistoryView,
 		'transaction-details': TransactionDetailsView,
 		'settings': SettingsView,
 		'qr-scanner': ScannerView

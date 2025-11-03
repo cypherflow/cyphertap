@@ -14,8 +14,8 @@ import { BROWSER as browser } from 'esm-env'
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import { startUnpublishedEventsMonitor, stopUnpublishedEventsMonitor } from '$lib/services/unpublishedEvents.js';
 import { createDebug } from '$lib/utils/debug.js';
-import { initWallet } from './wallet.js';
 import { navigateTo } from './navigation.js';
+import { DEFAULT_RELAYS, initWallet } from './wallet.svelte.js';
 
 // Create debug logger for Nostr functionality
 const debug = createDebug('nostr');
@@ -54,8 +54,8 @@ export async function initNDK(signer: NDKSigner) {
   }
 
   // Get user from signer
-  d.log('Getting user from signer');
   const user = await signer.user();
+  d.log('User from signer: ', user);
 
   if (!user) {
     d.error('Failed to get user from signer');
@@ -71,40 +71,32 @@ export async function initNDK(signer: NDKSigner) {
   });
 
   d.log('Creating new NDK instance or updating existing one');
-  const ndk =
+  let ndk =
     existingNdk ||
     new NDKSvelte({
-      explicitRelayUrls: [
-        'wss://relay.cypherflow.ai'
-        // Add other default relays as needed
-      ],
-      enableOutboxModel: false,
-      autoFetchUserMutelist: false,
-      signer: signer,
+      explicitRelayUrls: DEFAULT_RELAYS,
+      enableOutboxModel: true,
+      autoFetchUserMutelist: true,
+      autoConnectUserRelays: true,
       cacheAdapter: dexieAdapter,
     });
+
+  d.log("Adding singer: ", signer)
+  ndk.signer = signer;
+  d.log("New ndk active user: ", ndk.activeUser)
 
   // Update stores (early to ensure UI can display loading state)
   d.log('Updating NDK and user stores');
   ndkInstance.set(ndk);
   currentUser.set(user);
 
-  // Connect to relays
-  try {
-    d.log('Connecting to relays');
-    await ndk.connect();
-    d.log('Successfully connected to relays');
-
-    // Set up relay event listeners
-    d.log('Setting up relay event listeners');
-    relaySetup(ndk);
-  } catch (err) {
-    d.error('Failed to connect to relays:', err);
-    d.warn('Continuing without relay connection - will work with cached data only');
-    // Continue anyway - we might still be able to work with locally cached data
+  if (ndk.activeUser){
+    d.log("Active user of NDK: ", ndk.activeUser.pubkey);
+  } else {
+    d.error("No active user in ndk instance...")
   }
 
-  d.log('NDK initialization complete');
+  d.log('NDK initialization complete with user: ', user);
   return { ndk, user };
 }
 
@@ -120,13 +112,15 @@ function relaySetup(ndk: NDKSvelte) {
   d.log('Registering event listeners');
 
   const handleRelayConnect = (relay: any) => {
-    d.log(`Connected to: ${relay.url}`);
+    const d = debug.extend(`on:${relay.url}:connected`)
+    d.log(`CONNECTED`);
     // This will trigger updates to derived stores
     ndkInstance.set(ndk);
   };
 
   const handleRelayDisconnect = (relay: any) => {
-    d.log(`Disconnected from: ${relay.url}`);
+    const d = debug.extend(`on:${relay.url}:disconnect`)
+    d.log(`DISCONNECTED`);
     // This will trigger updates to derived stores
     ndkInstance.set(ndk);
   };
@@ -177,8 +171,8 @@ export async function privateKeyLogin(nsec: string) {
       throw new Error('Invalid private key format');
     }
 
-    // Initialize NDK with private key signer
-    await initNDK(signer);
+    // // Initialize NDK with private key signer
+    // await initNDK(signer);
 
     // Save the key securely
     d.log('Securely storing private key');
@@ -186,7 +180,7 @@ export async function privateKeyLogin(nsec: string) {
     d.log('Private key stored securely');
 
     d.log('Login with private key completed successfully');
-    return true;
+    return signer;
   } catch (error) {
     d.error('Login with private key failed:', error);
     loginError.set(error instanceof Error ? error.message : 'Login failed');
@@ -219,8 +213,8 @@ export async function nip07Login() {
     const nip07signer = new NDKNip07Signer();
     d.log('NIP-07 signer created successfully');
 
-    // Initialize NDK with nip-07 signer
-    await initNDK(nip07signer);
+    // // Initialize NDK with nip-07 signer
+    // await initNDK(nip07signer);
 
     // Store marker for extension login
     if (browser) {
@@ -229,7 +223,7 @@ export async function nip07Login() {
     }
 
     d.log('Login with extension completed successfully');
-    return true;
+    return nip07signer;
   } catch (error) {
     d.error('Login with extension failed:', error);
     loginError.set(error instanceof Error ? error.message : 'Login failed');
@@ -256,41 +250,35 @@ function storePrivateKey(privateKey: string) {
 
 /**
  * Unified login function that handles both login methods
- * Keeps all login logic in the Nostr service
  */
 export async function login(options: {
   method: 'private-key' | 'nip-07';
   privateKey?: string;
-}): Promise<void> {
+}): Promise<NDKSigner> {
   const d = debug.extend("login")
   d.log(`Login with method: ${options.method}`);
 
   try {
-    isConnecting.set(true);
-    loginError.set(null);
+    let signer: NDKSigner;
 
     // Perform login based on method
     if (options.method === 'private-key' && options.privateKey) {
-      await privateKeyLogin(options.privateKey);
+      signer = await privateKeyLogin(options.privateKey);
     } else if (options.method === 'nip-07') {
-      await nip07Login();
+      signer = await nip07Login();
     } else {
       throw new Error('Invalid login method or missing required parameters');
     }
 
-    d.log(`Login successful!`);
-    navigateTo("main");
-
-    // Start unpublished events monitor
-    startUnpublishedEventsMonitor();
-
-    await initWallet();
-
-
-    return;
+    const user = await signer.user();
+    if (user.pubkey) {
+      d.log(`Login successful with signer `, signer);
+    } else {
+      d.error("Failed to login with signer")
+    }
+    return signer;
   } catch (error) {
-    d.error('Login failed:', error);
-    loginError.set(error instanceof Error ? error.message : 'Login failed');
+    d.error('login failed:', error);
     throw error;
   } finally {
     isConnecting.set(false);
@@ -301,48 +289,51 @@ export async function login(options: {
  * Try to auto-login with stored credentials
  * This function only handles the NDK initialization, not other components
  */
-export async function autoLogin() {
+export async function autoLogin(): Promise<NDKSigner | undefined> {
   const d = debug.extend("autoLogin");
 
   if (!browser) {
     d.warn('Not in browser environment, skipping auto-login');
-    return null;
+    return undefined;
   }
+
+  let signer = undefined;
 
   try {
     // Check if we have a stored key
+    // TODO: ADD PERSISTEDRUNES HERE
     const storedKey = localStorage.getItem(ENCRYPTED_KEY);
     const extensionMarker = localStorage.getItem(EXTENSION_LOGIN);
 
     if (storedKey) {
       d.log('Found stored private key, attempting login');
-      // In a real app, you'd decrypt this key first
-      return await login({
+      signer = await login({
         method: 'private-key',
         privateKey: storedKey
       })
     } else if (extensionMarker === 'true') {
       d.log('Found extension login marker, attempting extension login');
 
-      // Check if extension is available
       if (!window.nostr) {
         d.error('Extension not available but marker exists');
         throw new Error('Nostr extension not found. Please install or enable your extension.');
       }
 
-      return await login({ method: "nip-07" });
+      signer = await login({ method: "nip-07" });
     } else {
       d.log('No stored credentials found, auto-login skipped');
+      return undefined
     }
+    return signer;
+
   } catch (error) {
     d.error('Auto-login failed:', error);
-    // Clear potentially corrupted credentials
     d.log('Clearing potentially corrupted credentials');
     localStorage.removeItem(ENCRYPTED_KEY);
     localStorage.removeItem(EXTENSION_LOGIN);
   }
 
-  return null;
+  return signer;
 }
 
 /**

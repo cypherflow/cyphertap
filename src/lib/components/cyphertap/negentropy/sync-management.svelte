@@ -11,10 +11,10 @@
 	import Database from '@lucide/svelte/icons/database';
 	import { createWalletRelaySync, RelaySync } from '$lib/stores/relaySync.svelte.js';
 	import { relays, getNDK, currentUser } from '$lib/stores/nostr.js';
-	import { wallet } from '$lib/stores/wallet.js';
 	import type { NDKRelay } from '@nostr-dev-kit/ndk';
+	import { wallet } from '$lib/stores/wallet.svelte.js';
 
-    let relaySyncs = $state<RelaySync[]>($wallet?.relaySet?.relays.forEach((relay: NDKRelay) => createWalletRelaySync(relay, $currentUser?.pubkey!)) || [])
+    let relaySyncs = $state<RelaySync[]>(wallet.ndkWallet?.relaySet?.relays.forEach((relay: NDKRelay) => createWalletRelaySync(relay, wallet.ndk?.activeUser?.pubkey!)) || [])
 
 
 	// Reactive state

@@ -34,7 +34,7 @@
 	});
 
 	async function handleRefresh() {
-		if (!$wallet || !$wallet.ndk) return;
+		if (!wallet) return;
 
 		try {
 			refreshing = true;

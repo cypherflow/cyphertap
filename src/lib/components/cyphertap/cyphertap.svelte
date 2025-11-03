@@ -12,7 +12,7 @@
 
 	import { Drawer, DrawerTrigger, DrawerContent }  from '$lib/components/ui/drawer/index.js';
 	import { onMount } from 'svelte';
-	import { autoLogin } from '$lib/stores/nostr.js';
+	import { autoLogin } from '$lib/stores/nostr.svelte.js';
 
 	const isDesktop = new MediaQuery('(min-width: 768px)').current;
 	// When popover opens, reset current view

@@ -1,18 +1,21 @@
 <!-- src/lib/components/nostr/NostrGenerateKeyView.svelte -->
 <script lang="ts">
 	import { generateNewKeypair, login } from '$lib/stores/nostr.js';
-	import { appState, InitStatus } from '$lib/services/init.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { isUserMenuOpen, navigateTo } from '$lib/stores/navigation.js';
 	import { onMount } from 'svelte';
 	import ViewContainer from './view-container.svelte';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
+	import { wallet } from '$lib/stores/wallet.svelte.js';
+	import { nostr } from '$lib/stores/nostr.svelte.js';
+	// import { wallet } from '$lib/stores/wallet.js';
 
 	let errorMessage = $state<string>('');
 	let isGenerating = $state<boolean>(false);
 
 	// Auto-generate key on mount
 	onMount(async () => {
+		wallet.newKeyPair = true;
 		await handleGenerateNewKey();
 	});
 
@@ -68,11 +71,9 @@
 			<!-- You could add a loading animation here -->
 			<div class="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
 			<p class="text-sm font-medium">
-				{isGenerating || appState.status === InitStatus.INITIALIZING
+				{!nostr.ndk
 					? 'Generating your new account...'
-					: errorMessage
-						? 'Error creating account'
-						: 'Account created successfully!'}
+					: 'done'}
 			</p>
 		</div>
 
@@ -81,7 +82,6 @@
 			<Button
 				class="w-full"
 				onclick={handleGenerateNewKey}
-				disabled={isGenerating || appState.status === InitStatus.INITIALIZING}
 			>
 				Try Again
 			</Button>

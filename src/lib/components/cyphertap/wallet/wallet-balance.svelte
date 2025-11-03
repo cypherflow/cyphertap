@@ -1,14 +1,18 @@
 <!-- src/lib/components/wallet/WalletBalance.svelte -->
 <script lang="ts">
-	import { walletBalance, isWalletReady } from '$lib/stores/wallet.js';
+	import { wallet } from '$lib/stores/wallet.svelte.js';
     import LoaderCircle from '@lucide/svelte/icons/loader-circle'
 
-	export let compact = false;
+
+	let compact = false;
+	$effect(() => {
+		console.log("updated balance: from wallet-balance.svelte ", wallet.balance)
+	})
 </script>
 
 <div class={compact ? 'text-sm text-muted-foreground' : 'text-3xl font-bold'}>
-	{#if $isWalletReady}
-		{$walletBalance.toLocaleString()} sats
+	{#if wallet}
+		{wallet.balance.total} sats
 	{:else}
 		<div class="flex items-center gap-2">
 			<LoaderCircle class="h-4 w-4 animate-spin" />

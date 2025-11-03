@@ -1,7 +1,6 @@
 <!-- src/lib/components/nostr/NostrLoginView.svelte -->
 <script lang="ts">
 	import { isConnecting } from '$lib/stores/nostr.js';
-	import { appState, InitStatus } from '$lib/services/init.svelte.js';
 	import { navigateTo } from '$lib/stores/navigation.js';
 	import { onMount } from 'svelte';
 	import ViewContainer from './view-container.svelte';
@@ -32,7 +31,6 @@
 		<Button
 			variant="default"
 			class="w-full justify-start"
-			disabled={appState.status === InitStatus.INITIALIZING}
 			onclick={() => navigateTo('login-generate-key')}
 		>
 			<UserPlus class="mr-2 h-4 w-4" />
@@ -43,7 +41,6 @@
 			<Button
 				variant="outline"
 				class="w-full justify-start"
-				disabled={appState.status === InitStatus.INITIALIZING}
 				onclick={() => navigateTo('login-link-device')}
 			>
 				<MonitorSmartphone class="mr-2 h-4 w-4" />
@@ -58,7 +55,6 @@
 		<Button
 			variant="outline"
 			class="w-full justify-start"
-			disabled={!hasNostrExtension || $isConnecting || appState.status === InitStatus.INITIALIZING}
 			onclick={() => navigateTo('login-nip-07')}
 		>
 			<LogIn class="mr-2 h-4 w-4" />
@@ -69,7 +65,6 @@
 			<Button
 				variant="outline"
 				class="w-full justify-start"
-				disabled={appState.status === InitStatus.INITIALIZING}
 				onclick={() => navigateTo('login-private-key')}
 			>
 				<Key class="mr-2 h-4 w-4" />

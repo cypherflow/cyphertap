@@ -1,13 +1,13 @@
 <!-- src/lib/components/nostr/NostrMainView.svelte -->
 <script lang="ts">
 	import { currentUser } from '$lib/stores/nostr.js';
-	import { isLoadingTransactions, walletTransactions } from '$lib/stores/wallet.js';
+	// import { isLoadingTransactions, walletTransactions } from '$lib/stores/wallet.js';
     import { navigateTo } from '$lib/stores/navigation.js';
 
 	import Button from '$lib/components/ui/button/button.svelte';
 	import ViewContainer from './view-container.svelte';
 	import WalletBalance from '../wallet/wallet-balance.svelte';
-	import RecentTransactions from '../wallet/recent-transactions.svelte';
+	// import RecentTransactions from '../wallet/recent-transactions.svelte';
 
 	import ArrowDownRight from '@lucide/svelte/icons/arrow-down-right';
 	import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
@@ -71,11 +71,11 @@
 		</Button>
 	</div>
 	<!-- Recent Transactions Section -->
-	{#if $walletTransactions.length > 0 || $isLoadingTransactions}
+	<!-- {#if $walletTransactions.length > 0 || $isLoadingTransactions}
 		<div class="mt-2 rounded-lg bg-secondary/20 p-3">
 			<RecentTransactions limit={3} />
 		</div>
-	{/if}
+	{/if} -->
 	<!-- Footer warning text -->
 	<div class="mt-6 border-t pt-2 text-center text-xs text-muted-foreground">
 		<p>

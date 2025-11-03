@@ -1,6 +1,5 @@
 // src/lib/stores/relaySync.svelte.ts
 import { createDebug } from '$lib/utils/debug.js';
-import { getNDK } from './nostr.js';
 import { performMultiFilterNegentropySync, type FilterWithEvents } from '$lib/utils/negentropyWebSocket.js';
 import type { RelaySyncState, FilterSyncResult, SyncResult } from '$lib/types/negentropy.js';
 import { 
@@ -10,6 +9,7 @@ import {
     type NDKFilter,
     NDKRelaySet
 } from '@nostr-dev-kit/ndk';
+import { nostr } from './nostr.svelte.js';
 
 const debug = createDebug('relay-sync');
 
@@ -84,11 +84,12 @@ export class RelaySync {
     // Get all local events matching a specific filter
     private async getLocalEventsForFilter(filter: NDKFilter): Promise<NDKEvent[]> {
         const d = this.debug.extend('getLocalEventsForFilter');
-        const ndk = getNDK();
+
+        if (!nostr.ndk) return [];
         
         try {
             d.log('Fetching local events with filter:', filter);
-            const events = await ndk.fetchEvents(filter, {
+            const events = await nostr.ndk.fetchEvents(filter, {
                 cacheUsage: NDKSubscriptionCacheUsage.ONLY_CACHE
             });
             
@@ -104,10 +105,12 @@ export class RelaySync {
     // Upload events using NDK
     private async uploadEvents(eventIds: string[], localEvents: NDKEvent[]): Promise<void> {
         const d = this.debug.extend('uploadEvents');
+        if (!nostr.ndk) {
+            d.log("nostr.ndk has not been initialized")
+        }
         d.log(`Uploading ${eventIds.length} events`);
 
-        let ndk = getNDK();
-        let relaySet: NDKRelaySet = new NDKRelaySet(new Set([this.relay]), ndk)
+        let relaySet: NDKRelaySet = new NDKRelaySet(new Set([this.relay]), nostr.ndk!)
         
         let uploadedCount = 0;
         
@@ -116,7 +119,7 @@ export class RelaySync {
             if (event) {
                 try {
                     d.log(`📤 Uploading event: ${eventId.slice(0, 8)}...`);
-                    event.ndk = ndk;
+                    event.ndk = nostr.ndk;
                     await event.publish(relaySet);
                     uploadedCount++;
                     this.progress.message = `Uploaded ${uploadedCount}/${eventIds.length} events`;
@@ -141,9 +144,13 @@ export class RelaySync {
             d.log('No events to download');
             return;
         }
-        
-        const ndk = getNDK();
-        
+
+        if (!nostr.ndk) {
+            d.log('No ndk/... what the fuck');
+            return;
+        }
+
+                
         return new Promise((resolve) => {
             const timeout = setTimeout(() => {
                 d.warn('Download timeout reached, resolving anyway');
@@ -155,12 +162,12 @@ export class RelaySync {
             
             d.log(`Creating subscription for ${targetCount} event IDs`);
             
-            const subscription = ndk.subscribe(
+            const subscription = nostr.ndk!.subscribe(
                 { ids: eventIds },
                 { 
                     closeOnEose: true,
                     cacheUsage: NDKSubscriptionCacheUsage.CACHE_FIRST,
-                    relaySet: NDKRelaySet.fromRelayUrls([this.relay.url], ndk)
+                    relaySet: NDKRelaySet.fromRelayUrls([this.relay.url], nostr.ndk)
                 },
             );
             
@@ -406,7 +413,7 @@ export class RelaySync {
 export function createWalletRelaySync(relay: NDKRelay, userPubkey: string): RelaySync {
     const walletFilters: FilterConfig[] = [
         {
-            filter: { authors: [userPubkey], kinds: [17375, 7375, 7376] },
+            filter: { authors: [userPubkey], kinds: [17375, 10019, 7374, 7375, 7376] },
             name: 'Wallet Tokens and History Events'
         },
         {

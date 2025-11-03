@@ -1,7 +1,6 @@
 <!-- src/lib/components/nostr/NostrPrivateKeyView.svelte -->
 <script lang="ts">
 	import { isConnecting, login } from '$lib/stores/nostr.js';
-	import { appState, InitStatus } from '$lib/services/init.svelte.js'
 	import { navigateTo } from '$lib/stores/navigation.js'
 	import ViewContainer from './view-container.svelte'
 	import { slide } from 'svelte/transition';
@@ -96,21 +95,11 @@
 				bind:value={privateKey}
 				class="font-mono text-sm"
 				autocomplete="current-password"
-				disabled={!securityWarningAccepted || appState.status === InitStatus.INITIALIZING}
 			/>
 			<Button
 				type="submit"
 				class="w-full"
-				disabled={!securityWarningAccepted ||
-					!privateKey ||
-					$isConnecting ||
-					appState.status === InitStatus.INITIALIZING}
 			>
-				{appState.status === InitStatus.INITIALIZING
-					? 'Initializing...'
-					: $isConnecting
-						? 'Signing in...'
-						: 'Sign In'}
 			</Button>
 		</form>
 	</div>

@@ -3,10 +3,6 @@
 	import { navigateTo } from '$lib/stores/navigation.js';
 	import { scanResult } from '$lib/stores/scan-store.js';
 	import { login } from '$lib/stores/nostr.js';
-	import {
-		appState,
-		InitStatus
-	} from '$lib/services/init.svelte';
 	import { decryptToSigner } from '$lib/utils/nip49.js';
 	import { onMount } from 'svelte';
     import { InputOTP, InputOTPGroup, InputOTPSlot } from "$lib/components/ui/input-otp/index.js";
@@ -137,7 +133,6 @@
 			variant={encryptedKey ? 'outline' : 'default'}
 			class="w-full justify-center"
 			onclick={scanQRCode}
-			disabled={!!encryptedKey || appState.status === InitStatus.INITIALIZING}
 		>
 			{#if !!encryptedKey}
 				<Check class="mr-2 h-4 w-4" />
@@ -168,14 +163,9 @@
 			<Button
 				variant="default"
 				class="w-full"
-				disabled={isProcessing ||
-					!pin ||
-					pin.length !== 4 ||
-					appState.status === InitStatus.INITIALIZING}
 				onclick={handleLinkDevice}
 			>
 				<Link class="mr-2 h-4 w-4" />
-				{isProcessing || appState.status === InitStatus.INITIALIZING ? 'Linking...' : 'Link Device'}
 			</Button>
 		{/if}
 	</div>

@@ -1,8 +1,8 @@
 // src/lib/client/services/unpublishedEvents.ts
 import { get } from 'svelte/store';
 import { BROWSER as browser } from 'esm-env';
-import { getNDK, relayConnectionStatus } from '$lib/stores/nostr.js';
 import { createDebug } from '$lib/utils/debug.js';
+import { nostr } from '$lib/stores/nostr.svelte.js';
 
 // Create debug logger
 const d = createDebug('unpublished-events');
@@ -27,20 +27,20 @@ export async function publishUnpublishedEvents(): Promise<number> {
     return 0;
   }
 
-  const ndk = getNDK();
+  let ndk = nostr.ndk;
   if (!ndk || !ndk.cacheAdapter || typeof ndk.cacheAdapter.getUnpublishedEvents !== 'function') {
     d.warn('NDK or cache adapter not available, or getUnpublishedEvents method missing');
     return 0;
   }
 
-  // Check connection status
-  const connectionStatus = get(relayConnectionStatus);
-  const connectedRelays = connectionStatus.filter(relay => relay.connected);
+  // // Check connection status
+  // const connectionStatus = get(relayConnectionStatus);
+  // const connectedRelays = connectionStatus.filter(relay => relay.connected);
 
-  if (connectedRelays.length === 0) {
-    d.log('No connected relays, skipping unpublished events check');
-    return 0;
-  }
+  // if (connectedRelays.length === 0) {
+  //   d.log('No connected relays, skipping unpublished events check');
+  //   return 0;
+  // }
 
   try {
     isCheckingUnpublishedEvents = true;
