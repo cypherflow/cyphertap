@@ -5,6 +5,7 @@ export { default as Cyphertap } from '$lib/components/cyphertap/cyphertap.svelte
 
 // Programmatic API
 export { cyphertap } from '$lib/api/cyphertap-api.svelte.js';
+export { isUserMenuOpen } from '$lib/stores/navigation.js';
 
 // Navigation state (for external control of popover)
 export { isUserMenuOpen } from '$lib/stores/navigation.js';
